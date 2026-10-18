@@ -19,6 +19,7 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 | ---- | -------------------------------------------------------------------------------------- |
 | ✅   | Project scaffold with the same tooling as Q0T4 (#1)                                    |
 | ✅   | Vitest unit tests, happy-dom webview tests, and a 90% coverage gate on `src/core` (#2) |
+| ✅   | Ports, domain types and the Q0T4 API contract types (#3)                               |
 
 ## Requirements
 
