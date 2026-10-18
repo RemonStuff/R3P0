@@ -10,7 +10,7 @@ Also add the **Q0T4 contract types** from [Q0T4-API-CONTRACT.md §2](../Q0T4-API
 These are types only, so the tests are compile-time checks.
 
 ## Tests to write first
-*(`test/unit/types/ports.test-d.ts`, using `expectTypeOf`)*
+*(`test/unit/types/ports.test.ts`, using `expectTypeOf`; enforced by `npm run typecheck`, the same as Q0T4)*
 - `BudgetPort.send takes a ModelRef and plain ChatMessages and returns a Reply with chunks and outcome`
 - `BudgetPort.allowReserve takes a subject and resolves a boolean`
 - `Availability is a discriminated union of ready | missing | activation-failed | version-mismatch | incompatible`
@@ -20,14 +20,14 @@ These are types only, so the tests are compile-time checks.
 - `Q0T4BudgetError.code is the union of the four Q0T4 codes`
 - `Turn.status covers complete | stopped-by-user | stopped-by-budget | failed | interrupted`
 
-*(`test/integration/types.ts`, typecheck only, where vscode is allowed)*
+*(`test/unit/types/q0t4Api.test.ts`, with type-only `vscode` imports, which are erased at runtime)*
 - `Q0T4Client<VscodeTypes>.sendRequest accepts vscode.LanguageModelChat, LanguageModelChatMessage[], LanguageModelChatRequestOptions | undefined and CancellationToken`
 
 ## Implementation tasks
 - [ ] `src/ports/*.ts` (one file per port) and `src/ports/q0t4Api.ts` (generic)
 - [ ] `src/adapters/q0t4Types.ts` (the `vscode` instantiation, types only)
 - [ ] `src/core/types.ts`
-- [ ] Enable Vitest `typecheck` for `*.test-d.ts`
+- [ ] Prove the type tests can fail (mutate one union and see typecheck go red)
 
 ## Acceptance criteria
 - [ ] The type tests pass, `npm run typecheck` is clean, and lint confirms ports don't import `vscode`

@@ -3,8 +3,10 @@ import { describe, expectTypeOf, it } from "vitest";
 import type {
   Availability,
   ChatMessage,
+  ModelInfo,
   ModelRef,
   RefusalCode,
+  RepoInfo,
   Reply,
   ReplyOutcome,
   SpendDecision,
@@ -100,8 +102,12 @@ describe("other ports", () => {
   });
 
   it("RepoDiscoveryPort and ModelCatalogPort list their items", () => {
-    expectTypeOf<ReturnType<RepoDiscoveryPort["current"]>>().resolves.toBeArray();
-    expectTypeOf<ReturnType<ModelCatalogPort["list"]>>().resolves.toBeArray();
+    expectTypeOf<ReturnType<RepoDiscoveryPort["current"]>>().resolves.toEqualTypeOf<
+      readonly RepoInfo[]
+    >();
+    expectTypeOf<ReturnType<ModelCatalogPort["list"]>>().resolves.toEqualTypeOf<
+      readonly ModelInfo[]
+    >();
   });
 
   it("WebviewChannelPort receives unknown raw messages, never trusted types", () => {
