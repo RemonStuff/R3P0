@@ -3,13 +3,14 @@
 **Iteration:** 4 (Q0T4 integration)
 
 ## Description
-The `q0t4Locator` adapter produces R3P0's availability. It calls `extensions.getExtension("RemonStuff.q0t4")` → `await ext.activate()` (so activation order doesn't matter) → `guardQ0T4Api(exports)` → a `Q0T4Budget` when `ready`. It re-runs on `extensions.onDidChange` (install, uninstall, enable, disable). When the state leaves `ready`, in-flight streams are cancelled. There's **no** `extensionDependencies` ([PLAN §2.3](../PLAN.md#23-how-r3p0-depends-on-q0t4-a-runtime-check-not-extensiondependencies)).
+The `q0t4Locator` adapter produces R3P0's availability. It calls `extensions.getExtension("RemonStuff.q0t4")` → `await ext.activate()` (so activation order doesn't matter) → `guardQ0T4Api(exports, "RemonStuff.r3p0")`, which calls `forExtension` → a `Q0T4Budget` over the client when `ready`, wired to the `q0t4Types` adapter functions (model lookup, message conversion, cancellation token, command runner). It re-runs on `extensions.onDidChange` (install, uninstall, enable, disable). When the state leaves `ready`, in-flight streams are cancelled. There's **no** `extensionDependencies` ([PLAN §2.3](../PLAN.md#23-how-r3p0-depends-on-q0t4-a-runtime-check-not-extensiondependencies)).
 
 ## Tests to write first
 *(unit: `test/unit/budget/availabilityMachine.test.ts`, the pure state transitions behind the locator)*
 - `missing → ready when Q0T4 appears`
 - `ready → missing cancels in-flight requests`
 - `activate rejecting gives activation-failed with the message`
+- `the client comes from forExtension("RemonStuff.r3p0")`
 - `a re-check while one is in progress is coalesced`
 
 *(integration)*

@@ -8,7 +8,7 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 
 - each tab header shows that repo's weekly budget and a warning when it runs low
 - when a repo's budget is spent, its input is disabled with an explanation
-- when Q0T4 asks before borrowing from the reserve, R3P0 shows an **Approve borrow** button
+- when a repo needs the reserve and Q0T4 is set to ask first, R3P0 shows **Allow reserve for ‹repo› this week**
 - without Q0T4 (or with an incompatible version), R3P0 refuses to send and explains why
 
 ## Status
@@ -23,7 +23,7 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 ## Requirements
 
 - VS Code 1.104 or newer
-- [Q0T4](https://github.com/RemonStuff/Q0T4), installed from its `.vsix`. Q0T4 needs GitHub Copilot Chat.
+- [Q0T4](https://github.com/RemonStuff/Q0T4) with its public API (Q0T4 v1.0, planned for the VS Code Marketplace; until then from its `.vsix`). Q0T4 needs GitHub Copilot Chat. R3P0 hands Q0T4 the model you pick, so the first request asks for language-model consent in R3P0's name.
 
 ## How to use
 
