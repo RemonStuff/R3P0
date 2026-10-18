@@ -3,13 +3,13 @@
 **Iteration:** 5 (Budget visibility)
 
 ## Description
-The first tab, **Overview**, shows a table with one row per open repo (weekly used/budget with a bar, monthly share, pace) and the **reserve** (used / budget, mode), plus the cycle dates when Q0T4 is in pool mode. Clicking a row selects that repo's tab. When Q0T4 is unavailable, it shows the banner from #32 instead. With no folders open, it says "Open a folder or workspace to get a chat per repo."
+The first tab, **Overview**, shows a table with one row per open repo (weekly used/budget with a bar, monthly share, pace) and the **reserve** (size, borrowed, remaining), plus the cycle dates when Q0T4 is in pool mode. Clicking a row selects that repo's tab. When Q0T4 is unavailable, it shows the banner from #32 instead. With no folders open, it says "Open a folder or workspace to get a chat per repo."
 
 ## Tests to write first
 *(DOM)*
 - `renders one row per repo in tab order with the weekly label and bar`
 - `renders monthly share and pace columns only in pool mode`
-- `renders the reserve row with used / budget and the mode`
+- `renders the reserve row with size, borrowed and remaining`
 - `shows the cycle start and end in pool mode`
 - `clicking a row posts selectTab with that repo's key`
 - `rows are keyboard reachable and Enter selects`

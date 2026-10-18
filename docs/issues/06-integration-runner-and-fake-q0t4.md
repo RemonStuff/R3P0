@@ -4,8 +4,8 @@
 
 ## Description
 Set up `@vscode/test-cli` and `@vscode/test-electron` so a real VS Code instance loads R3P0 next to two **test-only fixture extensions**:
-- **`fake-q0t4`**: package `publisher: "RemonStuff"`, `name: "q0t4"`, so `getExtension("RemonStuff.q0t4")` finds it. Its `activate()` returns a `FakeQ0T4Api`, bundled from `test/fakes/fakeQ0T4Api.ts`, so unit and integration tests script the same fake. The commands `fake-q0t4.script(...)` and `fake-q0t4.reset()` let tests script it, and `FAKE_Q0T4_API_VERSION` in the env overrides `apiVersion`.
-- **`fake-lm-provider`**: registers the vendor `r3p0-test` through `vscode.lm.registerLanguageModelChatProvider`, so the model picker has models. R3P0 never sends to them.
+- **`fake-q0t4`**: package `publisher: "RemonStuff"`, `name: "q0t4"`, so `getExtension("RemonStuff.q0t4")` finds it. Its `activate()` returns a `FakeQ0T4Api` shaped like Q0T4 §9.8 (`{ apiVersion: 1, forExtension(id) }` → a client), bundled from `test/fakes/fakeQ0T4Api.ts`, so unit and integration tests script the same fake. It also registers a fake `q0t4.allowReserve` command. The commands `fake-q0t4.script(...)`, `fake-q0t4.calls()` and `fake-q0t4.reset()` let tests script it and read what it received (the subject, the model's `vendor`/`id`, the message texts and the extension ID). `FAKE_Q0T4_API_VERSION` in the env overrides `apiVersion`. It streams scripted text and never calls the model it's given.
+- **`fake-lm-provider`**: registers the vendor `r3p0-test` through `vscode.lm.registerLanguageModelChatProvider`, so the model picker has models, and R3P0 has real `LanguageModelChat` objects to hand to the fake Q0T4. Nothing ever sends to them.
 
 Also add a script that generates a **multi-root test workspace**: temporary git repos (one with `origin` on GitHub, one with only `upstream`, one with no remote) plus a plain folder, written to a `.code-workspace` file.
 
@@ -14,17 +14,21 @@ The real Q0T4 and real Copilot models are never used.
 ## Tests to write first
 *(unit: `test/fakes/fakeQ0T4Api.test.ts`)*
 - `apiVersion defaults to 1 and can be overridden`
-- `members can be removed to simulate an incomplete API`
-- `sendRequest streams scripted text and resolves result`
-- `sendRequest rejects with code borrow-required unless options.approveBorrow`
-- `sendRequest ends text early with result.stopped = "budget" when scripted`
+- `forExtension returns a client and records the extension id`
+- `members can be removed to simulate an incomplete API (forExtension, or any client member)`
+- `sendRequest streams scripted text through stream, resolves text and result { cost, stopped, borrowed }`
+- `sendRequest rejects with a Q0T4BudgetError of the scripted code before streaming`
+- `in ask mode, sendRequest rejects with needs-reserve-approval until allowReserve(subject) for this week`
+- `sendRequest ends the stream early with result.stopped = "budget" when scripted`
 - `sendRequest honours the cancellation token`
-- `getStatus returns an entry for each requested subject`
-- `onDidChangeUsage fires when emit is called`
+- `canSpend returns the scripted SpendCheck`
+- `getStatus returns the scripted StatusSnapshot`
+- `onDidChangeUsage fires { subject, source, cost } when emit is called`
 
 *(integration: `test/integration/harness.test.ts`)*
 - `R3P0 extension is present in the test instance`
-- `fake Q0T4 is found as RemonStuff.q0t4 and activate() returns apiVersion 1`
+- `fake Q0T4 is found as RemonStuff.q0t4 and activate() returns apiVersion 1 with forExtension`
+- `the fake q0t4.allowReserve command is registered`
 - `fake LM provider models are visible via selectChatModels({ vendor: "r3p0-test" })`
 - `the test workspace has 4 folders and the git repos have the scripted remotes`
 - `no test file references vendor "copilot"` (grep test)
