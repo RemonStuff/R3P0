@@ -1,4 +1,4 @@
-# 04: `FakeBudget` and the shared `BudgetPort` contract suite
+# 04: `FakeBudget`, `FixedClock` and the shared `BudgetPort` contract suite
 
 **Iteration:** 0 (Test harness)
 
@@ -12,7 +12,7 @@
 - `send stops yielding and resolves stopped-by-user when the signal aborts`
 - `send ends early with outcome stopped-by-budget after chunk n when scripted`
 - `send rejects with each scripted refusal code before the first chunk`
-- `send throws mid-stream after chunk n when an error is scripted`
+- `an error after chunk n ends the stream and resolves outcome failed, keeping the cost` (a mid-stream error never throws from the iterator; `#30` converts Q0T4 stream errors the same way)
 - `check returns the scripted decisions in order: allowed, allowed with wouldBorrow, refused with a code`
 - `in ask mode, check and send refuse with needs-reserve-approval until allowReserve(subject)`
 - `a reserve grant applies to that subject only`
@@ -31,6 +31,8 @@
 - `contract: after allowReserve, needs-reserve-approval no longer refuses that subject this week`
 
 ## Implementation tasks
+- [ ] `test/fakes/fixedClock.ts` (timers run in due order inside `advance`/`set`; moved here from #05) and `test/fakes/fakeCancellation.ts`, each with tests
+- [ ] `src/core/budget/sendError.ts`: `SendError` carrying a `SendFailure`, which `send` rejects with
 - [ ] `test/fakes/fakeBudget.ts`, declared `satisfies BudgetPort`
 - [ ] `test/contract/budgetPortContract.ts`, exporting `budgetPortContract(name, makePort)`
 - [ ] `test/fakes/index.ts` barrel export
