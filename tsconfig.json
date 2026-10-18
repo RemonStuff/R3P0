@@ -16,6 +16,6 @@
     "noEmit": true,
     "types": ["node", "vscode"]
   },
-  "include": ["src", "test"],
-  "exclude": ["node_modules", "dist", "test/lint-fixtures", "src/webview"]
+  "include": ["src", "test", "vitest.config.ts"],
+  "exclude": ["node_modules", "dist", "test/lint-fixtures", "src/webview", "test/webview"]
 }

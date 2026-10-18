@@ -116,3 +116,4 @@ Each issue depends only on lower-numbered issues, so working top to bottom is al
 2. All tests are green, and core line and branch coverage is ≥ 90%
 3. CI is green: lint, typecheck, unit + DOM (ubuntu and windows), integration (xvfb, all three configs), package
 4. The manual checks in the issue are done, where the issue lists any
+5. `README.md` is updated: what R3P0 is, its current status, and how to use what exists so far (every PR, including docs PRs)
