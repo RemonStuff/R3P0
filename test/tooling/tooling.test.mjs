@@ -20,7 +20,8 @@ async function lint(code, filePath) {
 
 const valueImport = 'import * as vscode from "vscode";\n\nexport const api = vscode;\n';
 const typeImport = 'import type { Uri } from "vscode";\n\nexport type Target = Uri;\n';
-const adapterImport = 'import { channel } from "../adapters/webviewViewChannel";\n\nexport const c = channel;\n';
+const adapterImport =
+  'import { channel } from "../adapters/webviewViewChannel";\n\nexport const c = channel;\n';
 const extensionImport = 'import { activate } from "../extension";\n\nexport const a = activate;\n';
 
 function restrictedImports(messages) {
@@ -55,6 +56,11 @@ test("lint fails when a file in src/webview imports from src/adapters", async ()
 test("lint fails when a file in src/webview imports src/extension", async () => {
   const messages = await lint(extensionImport, "src/webview/fixture.ts");
   assert.equal(restrictedImports(messages).length, 1, JSON.stringify(messages));
+});
+
+test("lint passes when a file in src/webview imports from src/core", async () => {
+  const code = 'import { reduce } from "../core/ui/reducer";\n\nexport const r = reduce;\n';
+  assert.deepEqual(restrictedImports(await lint(code, "src/webview/fixture.ts")), []);
 });
 
 test("lint passes when a file in src/adapters imports vscode", async () => {
