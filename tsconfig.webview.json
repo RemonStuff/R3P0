@@ -1,0 +1,11 @@
+{
+  // The webview runs in a browser: DOM types, and neither node nor vscode types.
+  // It may import src/core, so core must also compile here.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": []
+  },
+  "include": ["src/webview", "src/core"],
+  "exclude": ["node_modules", "dist"]
+}
