@@ -83,8 +83,6 @@ describe("build", () => {
 
     expect(readFileSync(join(dist, "extension.js"), "utf8")).toMatch(/module\.exports/);
     expect(existsSync(join(dist, "webview.js"))).toBe(true);
-    expect(readFileSync(join(dist, "webview.js"), "utf8")).not.toMatch(
-      /module\.exports|require\(/,
-    );
+    expect(readFileSync(join(dist, "webview.js"), "utf8")).not.toMatch(/module\.exports|require\(/);
   }, 60_000);
 });

@@ -22,7 +22,7 @@ CI configuration can't be unit tested usefully. Instead, prove each gate goes re
   - `integration` (ubuntu): `xvfb-run -a npm run test:integration`, caching `.vscode-test/`
   - `package` (needs all of the above): `npx @vscode/vsce package`, uploading `r3p0-*.vsix`
 - [ ] `.github/ISSUE_TEMPLATE/bug.md` with a required "Failing test that reproduces it" section
-- [ ] `.github/pull_request_template.md` (red → green → refactor, `Closes #NN`)
+- [ ] `.github/pull_request_template.md` (red → green → refactor, `Closes #NN`, "README.md updated")
 - [ ] A CI badge in the README stub
 
 ## Acceptance criteria

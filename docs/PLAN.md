@@ -347,3 +347,4 @@ The same as Q0T4:
 - Commits end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, and PR bodies end with `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
 - The git identity is set repo-locally to `RemonStuff <203449353+RemonStuff@users.noreply.github.com>`.
 - `docs/**` branches contain no code and skip CI.
+- **Every PR updates `README.md`**: the project description and how to use it, kept current with what the branch adds.

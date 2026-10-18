@@ -44,6 +44,6 @@ describe("vitest setup", () => {
   });
 
   it("node unit tests have no DOM: document is undefined", () => {
-    expect(typeof document).toBe("undefined");
+    expect("document" in globalThis).toBe(false);
   });
 });
