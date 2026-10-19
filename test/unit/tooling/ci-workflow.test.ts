@@ -13,7 +13,7 @@ const workflow = () => readFileSync(workflowPath, "utf8").replace(/\r\n/g, "\n")
 function jobs(): Record<string, string> {
   const body = workflow().split(/^jobs:\n/m)[1] ?? "";
   const result: Record<string, string> = {};
-  for (const block of body.split(/^(?=  [a-z][\w-]*:\n)/m)) {
+  for (const block of body.split(/^(?= {2}[a-z][\w-]*:\n)/m)) {
     const name = /^ {2}([a-z][\w-]*):/.exec(block)?.[1];
     if (name) result[name] = block;
   }
