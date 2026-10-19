@@ -1,0 +1,89 @@
+# Lint, typecheck, unit + DOM tests with the core coverage gate, integration
+# tests in a real VS Code under xvfb, and a .vsix artifact (docs/PLAN.md §8.6).
+# Docs branches skip everything: pushes via branches-ignore, and pull requests
+# via the same `if:` on every job (pull_request can't filter on the head branch).
+name: CI
+
+on:
+  push:
+    branches-ignore: ["docs/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    if: ${{ !startsWith(github.head_ref, 'docs/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run format:check
+
+  unit:
+    if: ${{ !startsWith(github.head_ref, 'docs/') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run coverage
+      - uses: actions/upload-artifact@v7
+        if: ${{ always() && matrix.os == 'ubuntu-latest' }}
+        with:
+          name: coverage
+          path: coverage/
+          if-no-files-found: ignore
+
+  integration:
+    if: ${{ !startsWith(github.head_ref, 'docs/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Cache the VS Code test download
+        uses: actions/cache@v6
+        with:
+          path: .vscode-test/vscode-*
+          key: vscode-test-${{ runner.os }}-${{ hashFiles('.vscode-test.mjs') }}
+      - run: xvfb-run -a npm run test:integration
+
+  package:
+    if: ${{ !startsWith(github.head_ref, 'docs/') }}
+    needs: [check, unit, integration]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run package
+      - uses: actions/upload-artifact@v7
+        with:
+          name: r3p0-vsix
+          path: r3p0-*.vsix
+          if-no-files-found: error

@@ -1,5 +1,7 @@
 # R3P0
 
+[![CI](https://github.com/RemonStuff/R3P0/actions/workflows/ci.yml/badge.svg)](https://github.com/RemonStuff/R3P0/actions/workflows/ci.yml)
+
 **One chat per repo, metered through Q0T4.**
 
 R3P0 is a VS Code extension that gives you a separate chat for every repository in your workspace. In a multi-root workspace with 7 repos open, R3P0 shows 7 chat tabs, plus an **Overview** tab with every repo's budget. Each tab only sees files from its own repo.
@@ -23,6 +25,7 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 | ✅   | `FakeBudget`, `FixedClock` and the shared `BudgetPort` contract tests (#4)                     |
 | ✅   | Fakes for repo discovery, chat history, the model catalog, the webview channel and the UI (#5) |
 | ✅   | Integration tests in a real VS Code with a fake Q0T4 and a fake model provider (#6)            |
+| ✅   | GitHub Actions CI on every push and PR, with a `.vsix` artifact (#7)                           |
 
 ## Requirements
 
@@ -49,6 +52,7 @@ npm run lint        # includes the ban on vscode imports in core, ports and webv
 npm run typecheck   # extension and webview
 npm run test:integration  # real VS Code + a fake Q0T4 (see test/integration/README.md)
 npm run build       # dist/extension.js and dist/webview.js
+npm run package     # r3p0-<version>.vsix
 ```
 
 Press **F5** in VS Code to start an Extension Development Host with R3P0 loaded.
