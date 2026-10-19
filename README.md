@@ -15,12 +15,13 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 
 🚧 **In development: iteration 0 (test harness).** There's nothing to try in VS Code yet. The plan is in [docs/PLAN.md](docs/PLAN.md), and progress is tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and on the [R3P0 Roadmap board](https://github.com/users/RemonStuff/projects/2).
 
-| Done | What                                                                                   |
-| ---- | -------------------------------------------------------------------------------------- |
-| ✅   | Project scaffold with the same tooling as Q0T4 (#1)                                    |
-| ✅   | Vitest unit tests, happy-dom webview tests, and a 90% coverage gate on `src/core` (#2) |
-| ✅   | Ports, domain types and the Q0T4 API contract types (#3)                               |
-| ✅   | `FakeBudget`, `FixedClock` and the shared `BudgetPort` contract tests (#4)             |
+| Done | What                                                                                           |
+| ---- | ---------------------------------------------------------------------------------------------- |
+| ✅   | Project scaffold with the same tooling as Q0T4 (#1)                                            |
+| ✅   | Vitest unit tests, happy-dom webview tests, and a 90% coverage gate on `src/core` (#2)         |
+| ✅   | Ports, domain types and the Q0T4 API contract types (#3)                                       |
+| ✅   | `FakeBudget`, `FixedClock` and the shared `BudgetPort` contract tests (#4)                     |
+| ✅   | Fakes for repo discovery, chat history, the model catalog, the webview channel and the UI (#5) |
 
 ## Requirements
 
