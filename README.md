@@ -22,6 +22,7 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 | ✅   | Ports, domain types and the Q0T4 API contract types (#3)                                       |
 | ✅   | `FakeBudget`, `FixedClock` and the shared `BudgetPort` contract tests (#4)                     |
 | ✅   | Fakes for repo discovery, chat history, the model catalog, the webview channel and the UI (#5) |
+| ✅   | Integration tests in a real VS Code with a fake Q0T4 and a fake model provider (#6)            |
 
 ## Requirements
 
@@ -46,6 +47,7 @@ npm test            # unit tests (node) and webview DOM tests (happy-dom)
 npm run coverage    # fails below 90% line or branch coverage on src/core
 npm run lint        # includes the ban on vscode imports in core, ports and webview
 npm run typecheck   # extension and webview
+npm run test:integration  # real VS Code + a fake Q0T4 (see test/integration/README.md)
 npm run build       # dist/extension.js and dist/webview.js
 ```
 

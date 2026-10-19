@@ -17,3 +17,7 @@ esbuild.mjs
 eslint.config.mjs
 tsconfig.json
 tsconfig.webview.json
+out/**
+.vscode-test.mjs
+tsconfig.integration.json
+vitest.config.ts

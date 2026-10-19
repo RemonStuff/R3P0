@@ -20,13 +20,19 @@ const extensionHostPatterns = {
 
 export default defineConfig(
   {
-    ignores: ["dist/", "out/", "coverage/", ".vscode-test/", "test/lint-fixtures/"],
+    ignores: ["**/dist/", "out/", "coverage/", ".vscode-test/", "test/lint-fixtures/"],
   },
   js.configs.recommended,
   tseslint.configs.recommended,
   {
     files: ["**/*.mjs"],
     languageOptions: { globals: globals.node },
+  },
+  {
+    // Test-only fixture extensions in plain JS are CommonJS, loaded by VS Code as-is.
+    files: ["test/fixtures/**/*.js"],
+    languageOptions: { sourceType: "commonjs", globals: globals.node },
+    rules: { "@typescript-eslint/no-require-imports": "off" },
   },
   {
     files: ["src/core/**/*.ts", "src/ports/**/*.ts"],

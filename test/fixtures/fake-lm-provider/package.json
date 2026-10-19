@@ -1,0 +1,23 @@
+{
+  "name": "fake-lm-provider",
+  "displayName": "R3P0 test: fake language-model provider",
+  "description": "Test-only. Registers the model vendor r3p0-test so the model picker has models. It refuses every request: R3P0 must never call a model itself.",
+  "version": "0.0.0",
+  "publisher": "r3p0-test",
+  "private": true,
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "main": "./extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "languageModelChatProviders": [
+      {
+        "vendor": "r3p0-test",
+        "displayName": "R3P0 Test"
+      }
+    ]
+  }
+}
