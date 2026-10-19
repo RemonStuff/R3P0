@@ -87,7 +87,7 @@ Ports and adapters, the same as Q0T4. **All logic** lives in `src/core/` and nev
 src/
   core/                        pure, no vscode, ≥ 90% line + branch coverage
     repos/       normaliseRemote, repoIdentity (Q0T4 rules), reconcileTabs (diff), tabLabels (disambiguation)
-    chat/        ChatSession (one per repo: idle → sending → streaming → done/stopped/failed),
+    chat/        ChatSession (one per repo: idle → sending → streaming → idle; final status on the turn),
                  SessionManager (sessions per tab key, active tab, close = cancel), ChunkBatcher (ClockPort)
     history/     schema v1, parseHistory (validate, migrate, quarantine corrupt), caps, HistoryStore
     messages/    buildMessages (repo preamble, history, attachments, prompt), estimateTokens, trimToWindow
@@ -152,9 +152,23 @@ test/
    - `allowed` → continue, with a "will borrow from the reserve" note when `wouldBorrow` is set
    - `needs-reserve-approval` → post a **reserve prompt** ("Allow reserve for ‹repo› this week") and wait for `allowReserve`
    - any other refusal → post it, and keep the input disabled until usage changes
-5. `BudgetPort.send(...)` with an `AbortSignal`-style signal that's linked to **Stop**, closing the tab and folder removal. The adapter re-selects the model object for the `ModelRef`, converts the messages, and calls Q0T4's `sendRequest`. A `Q0T4BudgetError` before the first chunk is handled like step 4, because the pre-check can race. Chunks go through `ChunkBatcher`, which flushes every 50 ms or 2 KB via `ClockPort`, and are posted as `chunk` messages.
+5. `BudgetPort.send(...)` with an `AbortSignal`-style signal that's linked to **Stop**, closing the tab and folder removal. The adapter re-selects the model object for the `ModelRef`, converts the messages, and calls Q0T4's `sendRequest`. A `Q0T4BudgetError` before the first chunk is handled like step 4, because the pre-check can race. Chunks go through `ChunkBatcher`, which flushes 50 ms after the first buffered text or at 2,048 UTF-8 bytes via `ClockPort`, and are posted as `chunk` messages.
 6. `outcome` → the turn becomes `complete`, `stopped-by-user`, `stopped-by-budget` or `failed`, with `{ cost, unit, borrowed, model }`. It's persisted in `finally`, including on errors.
 7. Q0T4 fires `onDidChangeUsage`, R3P0 refreshes `status(allSubjects)` (debounced 250 ms), and every tab header and the Overview update.
+
+### 3.3 Single-session core (#10)
+
+`ChatSession` is pure core, with no controller or UI wiring yet. Its constructor takes `{ tabKey, subject, model: { vendor, id, name }, budget, clock, emit }`. The subject and model are fixed for this session; model choice and later subject changes belong to later issues.
+
+- `send(text, signal): Promise<void>` validates and trims the prompt with the shared protocol parser before creating any turns or sending a request. Invalid input rejects. An accepted send appends a user turn and creates a separate `StreamingTurn`, then emits `turnStarted`. Turn IDs are unique within that session; messages identify them together with the tab key.
+- The session is busy synchronously, before the first notification or `await`. Further sends are ignored while waiting for `BudgetPort.send`, consuming chunks, waiting for the outcome, or delivering the final notification. Sessions do not block each other.
+- The request contains the explicit subject, only `{ vendor, id }` for the model, and the transcript as plain `{ role, content }` messages. It includes the new prompt but not the in-flight assistant placeholder. There is no pre-check, model call, token counting, attachment reading or history persistence here.
+- `snapshot()` returns detached `{ phase, turns, streaming }` data. Phase is `idle`, `sending` or `streaming`; the final status belongs to an `AssistantTurn`, not the phase. Snapshots include all received partial text, even before the next batch is posted.
+- The caller owns the `CancellationSignal` and passes it unchanged to `BudgetPort`. The session preserves `stopped-by-user` and `stopped-by-budget` outcomes, partial text and reported `{ cost, unit, borrowed }`. It never invents zero usage when the port reports none. Session management, cancellation on folder removal and Stop-button wiring remain #18 and #23.
+- Budget rejections, failed outcomes and iterator errors finish the turn as failed with an explicit error message. Partial text is retained. A contradictory complete outcome cannot hide an iterator error, but its reported usage is kept. The outcome is observed immediately to handle unexpected rejection safely; it is awaited only after consuming chunks.
+- Normal completion flushes remaining text before exactly one `turnEnded`. The busy gate and batching timer are always released. A synchronous notification-sink error rejects `send`, rather than being relabelled as a model failure. If chunk delivery fails, including from a timer, further chunk notifications stop but the session drains the metered reply first. The transcript keeps its actual final status, text and usage, then `send` rejects with the original delivery error. A failure delivering `turnStarted` prevents the budget call.
+
+`ChunkBatcher(clock, emit)` exposes `push(text)`, `flush()` and `dispose()`. The first nonempty buffered input starts one 50 ms timer; later input does not reset it. A joined buffer of at least 2,048 UTF-8 bytes flushes immediately and cancels that timer. The threshold is a trigger, **not a hard outgoing message-size cap**: an oversized individual chunk stays intact. Text, whitespace and Unicode are preserved exactly, including surrogate pairs split across incoming chunks. Empty input starts no timer. Explicit flush emits any remainder once. Disposal discards buffered text and cancels the timer without emitting; it is idempotent, and subsequent `push` or `flush` calls reject misuse by throwing.
 
 ---
 

@@ -554,7 +554,7 @@ describe("ChatSession", () => {
       expect(context.clock.pendingTimers).toBe(0);
       expect(context.session.snapshot().turns).toHaveLength(2);
       expect(context.messages.filter((message) => message.type === "turnEnded")).toHaveLength(0);
-      if (type === "turnEnded") {
+      if (type !== "turnStarted") {
         expect(context.session.snapshot().turns[1]).toMatchObject({ status: "complete", usage });
       } else {
         expect(context.session.snapshot().turns[1]).toMatchObject({
@@ -567,6 +567,43 @@ describe("ChatSession", () => {
       expect(context.session.snapshot().turns).toHaveLength(4);
     },
   );
+
+  it("surfaces a timer sink failure through send after draining the metered outcome", async () => {
+    const error = new Error("Timed delivery failed");
+    let chunkCalls = 0;
+    const context = setup({
+      emit: (message) => {
+        if (message.type === "chunk") {
+          chunkCalls++;
+          throw error;
+        }
+        context.messages.push(message);
+      },
+    });
+    context.budget.scriptReply({ chunks: ["partial", " answer"], delayMs: 100, ...usage });
+    const pending = context.session.send("Prompt", context.signal);
+    try {
+      await flush();
+      context.clock.advance(100);
+      await flush();
+      expect(() => context.clock.advance(50)).not.toThrow();
+      expect(context.session.snapshot().phase).toBe("streaming");
+      await context.session.send("ignored", context.signal);
+      expect(context.send).toHaveBeenCalledTimes(1);
+      context.clock.advance(50);
+      await expect(pending).rejects.toBe(error);
+      expect(context.session.snapshot()).toMatchObject({
+        phase: "idle",
+        streaming: null,
+        turns: [{ role: "user" }, { text: "partial answer", status: "complete", usage }],
+      });
+      expect(chunkCalls).toBe(1);
+      expect(context.messages.map((message) => message.type)).toEqual(["turnStarted"]);
+    } finally {
+      context.signal.cancel();
+      await Promise.allSettled([pending]);
+    }
+  });
 
   it.each(Array.from({ length: 20 }, (_, i) => i + 1))(
     "preserves the exact text across seeded Unicode chunking %i",
