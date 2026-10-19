@@ -16,19 +16,28 @@ export default defineConfig([
   {
     ...common,
     label: "with-q0t4",
-    files: "out/test/integration/with-q0t4/**/*.test.js",
+    files: [
+      "out/test/integration/with-q0t4/**/*.test.js",
+      "out/test/integration/stub-view.test.js",
+    ],
     extensionDevelopmentPath: [".", fakeQ0T4, fakeProvider],
   },
   {
     ...common,
     label: "without-q0t4",
-    files: "out/test/integration/without-q0t4/**/*.test.js",
+    files: [
+      "out/test/integration/without-q0t4/**/*.test.js",
+      "out/test/integration/stub-view.test.js",
+    ],
     extensionDevelopmentPath: [".", fakeProvider],
   },
   {
     ...common,
     label: "q0t4-api-v2",
-    files: "out/test/integration/q0t4-api-v2/**/*.test.js",
+    files: [
+      "out/test/integration/q0t4-api-v2/**/*.test.js",
+      "out/test/integration/stub-view.test.js",
+    ],
     extensionDevelopmentPath: [".", fakeQ0T4, fakeProvider],
     env: { FAKE_Q0T4_API_VERSION: "2" },
   },
