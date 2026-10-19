@@ -4,7 +4,7 @@ See [PLAN.md](PLAN.md) for the architecture and testing rules, and [Q0T4-API-CON
 
 Every iteration ends with **CI green** and a **`.vsix` you can install** (downloaded from the CI artifact) and try by following `docs/manual-testing.md`.
 
-**Progress:** iteration 0 is complete (01–08). Iteration 1 has 1 of 6 issues complete: #09 protocol messages and validators. #10 `ChatSession` is in progress: implemented and awaiting review, not yet merged. Next: #11 the UI state reducer. CI runs on every push and PR. Ticked items name the PR that merged them.
+**Progress:** iteration 0 is complete (01–08). Iteration 1 has 2 of 6 issues complete: #09 protocol messages and validators, and #10 `ChatSession` core and chunk batching. Next: #11 the UI state reducer. CI runs on every push and PR. Ticked items name the PR that merged them.
 
 ## Iterations
 
@@ -58,7 +58,7 @@ Each issue depends only on lower-numbered issues, so working top to bottom is al
 
 ### Iteration 1: Walking skeleton
 - [x] 09 Protocol messages and validators (needs 03) ✅ PR #59
-- [ ] 10 `ChatSession` core (needs 04, 05, 09) — in progress; implementation and tests awaiting review
+- [x] 10 `ChatSession` core (needs 04, 05, 09) ✅ PR #60
 - [ ] 11 Webview state reducer (needs 09) ∥
 - [ ] 12 Webview DOM: transcript and composer (needs 11)
 - [ ] 13 Webview HTML/CSP and the channel adapter (needs 08, 09) ∥

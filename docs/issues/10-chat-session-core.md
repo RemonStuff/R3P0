@@ -51,7 +51,7 @@ Local validation also passed all **22 real VS Code integration tests** (11 with 
 
 ## Acceptance criteria
 - [x] The listed tests pass and core line/branch coverage is ≥ 90%
-- [ ] Hosted CI is green on the published head
+- [x] Hosted CI is green on the published head (see [PR #60](https://github.com/RemonStuff/R3P0/pull/60) for exact-head execution and artifact evidence)
 
 ## Depends on
 #04, #05, #09
