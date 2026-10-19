@@ -15,7 +15,7 @@ import type {
 import type { BudgetPort } from "../../src/ports/BudgetPort";
 import type { CancellationSignal } from "../../src/ports/CancellationSignal";
 import type { ClockPort } from "../../src/ports/ClockPort";
-import type { Disposable } from "../../src/ports/Disposable";
+import { Emitter } from "./emitter";
 
 /** One scripted answer to `send`. */
 export interface ReplyScript {
@@ -64,8 +64,10 @@ export class FakeBudget implements BudgetPort {
   private readonly grants = new Map<string, number>();
   private weekEnd = Number.POSITIVE_INFINITY;
   private reserveCommandAvailable = true;
-  private readonly usageListeners = new Set<(change: UsageChange) => void>();
-  private readonly availabilityListeners = new Set<(availability: Availability) => void>();
+  private readonly usage = new Emitter<UsageChange>();
+  private readonly availabilityChanges = new Emitter<Availability>();
+  readonly onDidChangeUsage = this.usage.event;
+  readonly onDidChangeAvailability = this.availabilityChanges.event;
 
   constructor(options: { clock: ClockPort }) {
     this.clock = options.clock;
@@ -87,11 +89,11 @@ export class FakeBudget implements BudgetPort {
 
   setAvailability(availability: Availability): void {
     this.state = availability;
-    for (const listener of this.availabilityListeners) listener(availability);
+    this.availabilityChanges.fire(availability);
   }
 
   emitUsageChanged(change: UsageChange): void {
-    for (const listener of this.usageListeners) listener(change);
+    this.usage.fire(change);
   }
 
   /** `subject` is over its weekly budget and Q0T4 is in "ask" mode. */
@@ -113,10 +115,6 @@ export class FakeBudget implements BudgetPort {
 
   availability(): Availability {
     return this.state;
-  }
-
-  onDidChangeAvailability(listener: (availability: Availability) => void): Disposable {
-    return subscribe(this.availabilityListeners, listener);
   }
 
   async status(): Promise<BudgetSnapshot | undefined> {
@@ -162,10 +160,6 @@ export class FakeBudget implements BudgetPort {
     if (!this.reserveCommandAvailable) return false;
     this.grants.set(key(subject), this.weekEnd);
     return true;
-  }
-
-  onDidChangeUsage(listener: (change: UsageChange) => void): Disposable {
-    return subscribe(this.usageListeners, listener);
   }
 
   // ── Internals ──────────────────────────────────────────────────────────────
@@ -217,11 +211,6 @@ function needsApproval(subject: string): SendFailure & { kind: "refused" } {
     code: "needs-reserve-approval",
     message: `${subject} needs the reserve; allow it for this week first.`,
   };
-}
-
-function subscribe<T>(listeners: Set<(value: T) => void>, listener: (value: T) => void) {
-  listeners.add(listener);
-  return { dispose: () => void listeners.delete(listener) };
 }
 
 /** Resolves after `ms` on the clock, or as soon as the signal is cancelled. */
