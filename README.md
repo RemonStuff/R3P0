@@ -49,18 +49,20 @@ See [docs/manual-testing.md](docs/manual-testing.md) for the install-and-try che
 
 Requires Node 24 and npm 11.
 
+On macOS, keep local validation window-free. Use the checks below; real VS Code integration tests run in GitHub-hosted Linux under a virtual display. Do not launch the integration suite or an Extension Development Host on the Mac unless a GUI debugging session is explicitly requested: those windows can interrupt full-screen work and switch Spaces.
+
 ```sh
 npm ci
 npm test            # unit tests (node) and webview DOM tests (happy-dom)
 npm run coverage    # fails below 90% line or branch coverage on src/core
 npm run lint        # includes the ban on vscode imports in core, ports and webview
-npm run typecheck   # extension and webview
-npm run test:integration  # real VS Code + a fake Q0T4 (see test/integration/README.md)
+npm run typecheck   # extension, webview and integration test types; no GUI
+npm run format:check
 npm run build       # dist/extension.js and dist/webview.js
 npm run package     # r3p0-<version>.vsix
 ```
 
-Press **F5** in VS Code to start an Extension Development Host with R3P0 loaded.
+Hosted CI still runs all three real VS Code configurations; no integration tests are skipped. See [test/integration/README.md](test/integration/README.md). For an explicitly requested GUI debugging session, **F5** starts an Extension Development Host with R3P0 loaded.
 
 The shared [protocol types and host message builders](src/core/protocol/messages.ts) and [message parsers](src/core/protocol/parse.ts) are the first building block for iteration 1 (#9). They validate messages in Node and the browser without VS Code dependencies. Send text is trimmed and limited to 100,000 UTF-8 bytes; invalid messages return an explicit reason instead of throwing. The controller and webview will use these parsers when they are wired in later issues. See [the iteration 1 contract](docs/PLAN.md#41-iteration-1-contract-09) for the exact payloads.
 

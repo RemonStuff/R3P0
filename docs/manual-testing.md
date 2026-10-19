@@ -16,7 +16,7 @@ There is no chat input yet. Sending messages, repo tabs and budgets arrive in la
 
 ## Automated checks
 
-`npm run test:integration` opens the actual view in three isolated VS Code configurations: fake Q0T4 v1, no Q0T4, and fake Q0T4 v2. It checks the contributions, activation, test-mode API, placeholder HTML, nonce-based content security policy and local bundle URI.
+GitHub-hosted Linux runs `xvfb-run -a npm run test:integration` in a virtual display. It opens the actual view in three isolated VS Code configurations: fake Q0T4 v1, no Q0T4, and fake Q0T4 v2. It checks the contributions, activation, test-mode API, placeholder HTML, nonce-based content security policy and local bundle URI. Do not run this GUI suite automatically on macOS: the extra windows can interrupt full-screen work and switch Spaces. Local validation stays window-free unless a GUI session is explicitly requested.
 
 `npm test -- test/unit/tooling/package.test.ts` builds both bundles and checks `vsce ls`. The package must include the activity-bar icon and both bundles, without source files, tests, build tooling or source maps.
 

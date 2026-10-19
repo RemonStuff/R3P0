@@ -14,6 +14,8 @@ Each config runs the tests in `test/integration/<label>/`.
 
 Every config also runs `stub-view.test.ts`. It opens `r3p0.chat`, checks the placeholder and its strict content security policy, and reads the resolved view through R3P0's test-only API. This proves the placeholder does not depend on Q0T4 being present or compatible.
 
+Opening the view is not a readiness barrier. The activation and placeholder tests share `openViewWhenReady`, which focuses once and waits up to five seconds for both an active extension and its resolved view. The activation check never calls `Extension.activate()` to force success. The existing test-API and CSP assertions remain in place. The wait's delayed-readiness, timeout and error paths have deterministic unit tests using fake time.
+
 ## Fixtures
 
 - **`test/fixtures/fake-q0t4`** has the same ID as Q0T4 (`RemonStuff.q0t4`) and exports `FakeQ0T4Api`, the same scripted fake the unit tests use (`test/fakes/fakeQ0T4Api.ts`), bundled by `test/fixtures/build.mjs`. It never calls the model it's given.
@@ -32,16 +34,27 @@ A unit test (`test/unit/tooling/integration-guard.test.ts`) fails if any test or
 | `fake-q0t4.emitUsage(change)` | Fires `onDidChangeUsage` with `{ subject, source, cost }`                                                                                                              |
 | `q0t4.allowReserve(subject)`  | Q0T4's real command name: grants the reserve for that subject until `weekEndsAt`                                                                                       |
 
-## Run
+## Hosted validation (default)
+
+On the work Mac, keep local checks window-free: unit/DOM tests, lint, typechecks, formatting, builds and packaging. Real VS Code instances can steal focus and switch Spaces, so do not launch integration tests locally unless a GUI session is explicitly requested.
+
+The [GitHub Actions integration job](../../.github/workflows/ci.yml) runs all three configurations on Linux with a virtual display:
 
 ```sh
-npm run test:integration
+xvfb-run -a npm run test:integration
 ```
 
-This builds R3P0 and the fake Q0T4, creates the workspace, compiles `test/integration` with `tsconfig.integration.json` into `out/`, and runs every config with `@vscode/test-cli`. The first run downloads VS Code into `.vscode-test/` (git-ignored). On Linux CI it runs under `xvfb-run -a`.
+This builds R3P0 and the fake Q0T4, creates the workspace, compiles `test/integration` with `tsconfig.integration.json` into `out/`, and runs every config with `@vscode/test-cli`. The first run downloads VS Code into `.vscode-test/` (git-ignored). No coverage or configuration is removed by keeping this suite off the Mac.
 
-## Debugging
+The readiness regressions can be run locally without opening VS Code:
 
+```sh
+npm test -- test/unit/tooling/viewReadiness.test.ts
+```
+
+## Explicit GUI debugging
+
+- A full local GUI run: `npm run test:integration`
 - One config: `npx vscode-test --label with-q0t4`
 - One test: `npx vscode-test --label with-q0t4 --grep "<test name>"`
 - Logs from the test instance are in `.vscode-test/user-data/logs/`.

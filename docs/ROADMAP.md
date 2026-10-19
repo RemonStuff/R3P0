@@ -6,6 +6,8 @@ Every iteration ends with **CI green** and a **`.vsix` you can install** (downlo
 
 **Progress:** iteration 0 is complete (01–08). Iteration 1 has 2 of 6 issues complete: #09 protocol messages and validators, and #10 `ChatSession` core and chunk batching. Next: #11 the UI state reducer. CI runs on every push and PR. Ticked items name the PR that merged them.
 
+**Verification follow-up:** [#61](https://github.com/RemonStuff/R3P0/issues/61) is fixed by [PR #62](https://github.com/RemonStuff/R3P0/pull/62). Main CI after #10 exposed an immediate activation assertion in the existing placeholder test. The repair waits for view-triggered activation and provider readiness without forcing activation. All 22 real VS Code integration tests pass in hosted Linux CI. Local validation on macOS is window-free. Verify green CI on the merged commit before the next feature merge.
+
 ## Iterations
 
 | # | Iteration | What you can try at the end | Issues |

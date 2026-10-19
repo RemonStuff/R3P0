@@ -1,6 +1,7 @@
 import * as assert from "node:assert/strict";
 import * as vscode from "vscode";
 import { R3P0_ID } from "./support";
+import { openViewWhenReady } from "./viewReadiness";
 
 interface StubTestApi {
   readonly view: vscode.WebviewView | undefined;
@@ -21,15 +22,16 @@ function extension() {
 }
 
 async function openView(): Promise<vscode.WebviewView> {
-  await vscode.commands.executeCommand("r3p0.chat.focus");
-  const api = extension().exports;
-  assert.ok(api, "test mode must expose the stub test API");
-  const deadline = Date.now() + 5_000;
-  while (!api.view && Date.now() < deadline) {
-    await new Promise((resolve) => setTimeout(resolve, 20));
-  }
-  assert.ok(api.view, "opening the view must resolve its provider");
-  return api.view;
+  return openViewWhenReady(
+    () => vscode.commands.executeCommand("r3p0.chat.focus"),
+    () => {
+      const current = extension();
+      if (!current.isActive) return undefined;
+      const api = current.exports;
+      assert.ok(api, "test mode must expose the stub test API");
+      return api.view;
+    },
+  );
 }
 
 describe("R3P0 placeholder view", () => {
@@ -46,7 +48,7 @@ describe("R3P0 placeholder view", () => {
   });
 
   it("activates R3P0 when the view is opened", async () => {
-    await vscode.commands.executeCommand("r3p0.chat.focus");
+    await openView();
     assert.equal(extension().isActive, true);
   });
 

@@ -352,6 +352,8 @@ Keys use the prefix `r3p0.` and are versioned:
 
 ### 8.3 Layers
 
+**Window-free local workflow on macOS:** run unit/DOM tests, lint, typechecks, formatting, builds and packaging locally. Real VS Code integration tests run in GitHub-hosted Linux under `xvfb`, not automatically on the Mac. Native GUI test windows can interrupt full-screen work and switch Spaces. Launch them locally only for an explicitly requested GUI debugging session. Hosted integration coverage remains mandatory before merging.
+
 | Layer | Tool | Scope | Target |
 |---|---|---|---|
 | Unit | Vitest (node) | `src/core/**`, `test/fakes/**`, the contract suites | < 5 s |
