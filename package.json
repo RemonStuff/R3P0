@@ -17,8 +17,30 @@
     "Chat"
   ],
   "main": "./dist/extension.js",
-  "activationEvents": [],
-  "contributes": {},
+  "activationEvents": [
+    "onView:r3p0.chat",
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "r3p0",
+          "title": "R3P0",
+          "icon": "media/r3p0.svg"
+        }
+      ]
+    },
+    "views": {
+      "r3p0": [
+        {
+          "id": "r3p0.chat",
+          "name": "R3P0",
+          "type": "webview"
+        }
+      ]
+    }
+  },
   "scripts": {
     "build": "node esbuild.mjs",
     "watch": "node esbuild.mjs --watch",

@@ -15,7 +15,7 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 
 ## Status
 
-🚧 **In development: iteration 0 (test harness).** There's nothing to try in VS Code yet. The plan is in [docs/PLAN.md](docs/PLAN.md), and progress is tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and on the [R3P0 Roadmap board](https://github.com/users/RemonStuff/projects/2).
+🚧 **In development: iteration 0 (test harness) is complete.** The installable extension opens a placeholder view, not a working chat. Q0T4 is not needed to try the placeholder. Next is iteration 1's walking skeleton. The plan is in [docs/PLAN.md](docs/PLAN.md), and progress is tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and on the [R3P0 Roadmap board](https://github.com/users/RemonStuff/projects/2).
 
 | Done | What                                                                                           |
 | ---- | ---------------------------------------------------------------------------------------------- |
@@ -26,19 +26,22 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 | ✅   | Fakes for repo discovery, chat history, the model catalog, the webview channel and the UI (#5) |
 | ✅   | Integration tests in a real VS Code with a fake Q0T4 and a fake model provider (#6)            |
 | ✅   | GitHub Actions CI on every push and PR, with a `.vsix` artifact (#7)                           |
+| ✅   | Installable activity-bar placeholder view with a strict content security policy (#8)           |
 
 ## Requirements
 
 - VS Code 1.104 or newer
-- [Q0T4](https://github.com/RemonStuff/Q0T4) with its public API (Q0T4 v1.0, planned for the VS Code Marketplace; until then from its `.vsix`). Q0T4 needs GitHub Copilot Chat. R3P0 hands Q0T4 the model you pick, so the first request asks for language-model consent in R3P0's name.
+- For metered chat (planned): [Q0T4](https://github.com/RemonStuff/Q0T4) with its public API (Q0T4 v1.0, planned for the VS Code Marketplace; until then from its `.vsix`). Q0T4 needs GitHub Copilot Chat. R3P0 will hand Q0T4 the model you pick, so the first request will ask for language-model consent in R3P0's name.
 
 ## How to use
 
-_Not installable yet._ From iteration 0's last issue (#8) on, every iteration produces a `.vsix`:
+Iteration 0 provides a placeholder only. It does not send messages or call a model.
 
-1. Download `r3p0-*.vsix` from the latest CI run (later: from GitHub Releases).
+1. Build with `npm ci && npm run package`, or download `r3p0-*.vsix` from the CI run for the revision you want (later: from GitHub Releases).
 2. Install it with **Extensions: Install from VSIX…** or `code --install-extension r3p0-<version>.vsix`.
-3. Open the **R3P0** view from the activity bar. You can drag it next to Copilot Chat in the secondary sidebar.
+3. Open **R3P0** from the activity bar. The view says **R3P0 isn't wired yet**. You can drag it next to Copilot Chat in the secondary sidebar.
+
+See [docs/manual-testing.md](docs/manual-testing.md) for the install-and-try checklist.
 
 ## Development
 

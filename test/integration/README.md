@@ -12,6 +12,8 @@ These tests run inside a real VS Code (pinned to 1.142.0 in `.vscode-test.mjs`, 
 
 Each config runs the tests in `test/integration/<label>/`.
 
+Every config also runs `stub-view.test.ts`. It opens `r3p0.chat`, checks the placeholder and its strict content security policy, and reads the resolved view through R3P0's test-only API. This proves the placeholder does not depend on Q0T4 being present or compatible.
+
 ## Fixtures
 
 - **`test/fixtures/fake-q0t4`** has the same ID as Q0T4 (`RemonStuff.q0t4`) and exports `FakeQ0T4Api`, the same scripted fake the unit tests use (`test/fakes/fakeQ0T4Api.ts`), bundled by `test/fixtures/build.mjs`. It never calls the model it's given.
