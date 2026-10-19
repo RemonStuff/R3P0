@@ -27,6 +27,7 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 | ✅   | Integration tests in a real VS Code with a fake Q0T4 and a fake model provider (#6)            |
 | ✅   | GitHub Actions CI on every push and PR, with a `.vsix` artifact (#7)                           |
 | ✅   | Installable activity-bar placeholder view with a strict content security policy (#8)           |
+| ✅   | Shared protocol message types, host builders and safe Node/browser validators (#9)             |
 
 ## Requirements
 
