@@ -120,3 +120,5 @@ Each issue depends only on lower-numbered issues, so working top to bottom is al
 4. The manual checks in the issue are done, where the issue lists any
 5. `README.md` is updated: what R3P0 is, its current status, and how to use what exists so far (every PR, including docs PRs)
 6. `docs/ROADMAP.md` is updated: the issue is ticked with its PR number, and the progress line names the next issue (every PR)
+
+<!-- Throwaway (#7): proves docs/** branches skip CI. -->
