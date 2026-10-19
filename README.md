@@ -15,7 +15,7 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 
 ## Status
 
-🚧 **In development: iteration 0 (test harness).** The installable extension opens a placeholder view, not a working chat. Q0T4 is not needed to try the placeholder. The plan is in [docs/PLAN.md](docs/PLAN.md), and progress is tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and on the [R3P0 Roadmap board](https://github.com/users/RemonStuff/projects/2).
+🚧 **In development: iteration 0 (test harness) is complete.** The installable extension opens a placeholder view, not a working chat. Q0T4 is not needed to try the placeholder. Next is iteration 1's walking skeleton. The plan is in [docs/PLAN.md](docs/PLAN.md), and progress is tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and on the [R3P0 Roadmap board](https://github.com/users/RemonStuff/projects/2).
 
 | Done | What                                                                                           |
 | ---- | ---------------------------------------------------------------------------------------------- |
@@ -26,6 +26,7 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 | ✅   | Fakes for repo discovery, chat history, the model catalog, the webview channel and the UI (#5) |
 | ✅   | Integration tests in a real VS Code with a fake Q0T4 and a fake model provider (#6)            |
 | ✅   | GitHub Actions CI on every push and PR, with a `.vsix` artifact (#7)                           |
+| ✅   | Installable activity-bar placeholder view with a strict content security policy (#8)           |
 
 ## Requirements
 

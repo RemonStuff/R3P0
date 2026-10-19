@@ -4,7 +4,7 @@ See [PLAN.md](PLAN.md) for the architecture and testing rules, and [Q0T4-API-CON
 
 Every iteration ends with **CI green** and a **`.vsix` you can install** (downloaded from the CI artifact) and try by following `docs/manual-testing.md`.
 
-**Progress:** iteration 0, 7 of 8 issues merged (01–07). CI runs on every push and PR. #08 (stub view and installable `.vsix`) is in progress and ends iteration 0. Next after #08: #09 protocol messages and validators. Ticked items name the PR that merged them.
+**Progress:** iteration 0 is complete (01–08). CI runs on every push and PR. Next: #09 protocol messages and validators, starting iteration 1's walking skeleton. Ticked items name the PR that merged them.
 
 ## Iterations
 
@@ -54,7 +54,7 @@ Each issue depends only on lower-numbered issues, so working top to bottom is al
 - [x] 05 The remaining fakes (needs 02, 03) ∥ ✅ PR #54
 - [x] 06 Integration runner, `FakeQ0T4Api` and the fake Q0T4 extension (needs 02, 03) ∥ ✅ PR #55
 - [x] 07 GitHub Actions CI (needs 02, 06) ✅ PR #56
-- [ ] 08 Stub view and `.vsix` (needs 06, 07). 🎯 **Install and try**
+- [x] 08 Stub view and `.vsix` (needs 06, 07). 🎯 **Install and try** ✅ PR #58
 
 ### Iteration 1: Walking skeleton
 - [ ] 09 Protocol messages and validators (needs 03)
