@@ -4,7 +4,7 @@ See [PLAN.md](PLAN.md) for the architecture and testing rules, and [Q0T4-API-CON
 
 Every iteration ends with **CI green** and a **`.vsix` you can install** (downloaded from the CI artifact) and try by following `docs/manual-testing.md`.
 
-**Progress:** iteration 0 is complete (01–08). CI runs on every push and PR. Next: #09 protocol messages and validators, starting iteration 1's walking skeleton. Ticked items name the PR that merged them.
+**Progress:** iteration 0 is complete (01–08). Iteration 1 has started with #09 protocol messages and validators (In Progress). Next after #09: #10 `ChatSession` and #11 the UI state reducer. CI runs on every push and PR. Ticked items name the PR that merged them.
 
 ## Iterations
 

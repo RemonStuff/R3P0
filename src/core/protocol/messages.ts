@@ -68,26 +68,23 @@ type HostPayload<Type extends HostMessage["type"]> = Omit<
 
 export const hostMessages = {
   snapshot(state: ViewState): Extract<HostMessage, { type: "snapshot" }> {
-    void state;
-    throw new Error("Not implemented");
+    return { v: PROTOCOL_VERSION, type: "snapshot", state };
   },
   turnStarted(payload: HostPayload<"turnStarted">): Extract<HostMessage, { type: "turnStarted" }> {
-    void payload;
-    throw new Error("Not implemented");
+    return { ...payload, v: PROTOCOL_VERSION, type: "turnStarted" };
   },
   chunk(tabKey: TabKey, turnId: string, text: string): Extract<HostMessage, { type: "chunk" }> {
-    void tabKey;
-    void turnId;
-    void text;
-    throw new Error("Not implemented");
+    return { v: PROTOCOL_VERSION, type: "chunk", tabKey, turnId, text };
   },
   turnEnded(payload: HostPayload<"turnEnded">): Extract<HostMessage, { type: "turnEnded" }> {
-    void payload;
-    throw new Error("Not implemented");
+    return { ...payload, v: PROTOCOL_VERSION, type: "turnEnded" };
   },
   error(message: string, tabKey?: TabKey): Extract<HostMessage, { type: "error" }> {
-    void message;
-    void tabKey;
-    throw new Error("Not implemented");
+    return {
+      v: PROTOCOL_VERSION,
+      type: "error",
+      message,
+      ...(tabKey === undefined ? {} : { tabKey }),
+    };
   },
 };

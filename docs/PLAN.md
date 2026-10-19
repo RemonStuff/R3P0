@@ -162,13 +162,15 @@ test/
 
 The **extension host is the single source of truth.** The webview renders what it receives, keeps no business state, and can be destroyed at any time (when hidden). All types live in `core/protocol` and are shared by both bundles. Each message has `{ v: 1, type, … }`.
 
+The tables below describe the target protocol across all iterations. Issue 09 implements only the [iteration 1 subset](#41-iteration-1-contract-09); later issues add the other messages and fields test-first.
+
 **Webview → host**
 
 | `type` | Payload | Notes |
 |---|---|---|
 | `ready` | `{}` | Sent on every (re)load. The host answers with `snapshot`. |
 | `selectTab` | `{ tabKey }` | `"overview"` or a folder key. Persisted as `ui.activeTab`. |
-| `send` | `{ tabKey, text, attachmentIds }` | `text` is trimmed and must not be empty, at most 100 kB. |
+| `send` | `{ tabKey, text, attachmentIds }` | `text` is trimmed and must not be empty, at most 100,000 UTF-8 bytes after trimming. Attachment IDs are added in iteration 6. |
 | `stop` | `{ tabKey }` | |
 | `newConversation` | `{ tabKey }` | |
 | `pickModel` | `{ tabKey, model: { vendor, id } }` | |
@@ -192,6 +194,37 @@ The **extension host is the single source of truth.** The webview renders what i
 | `error` | `{ tabKey?, message }` |
 
 **Ordering and loss:** `postMessage` to a hidden or destroyed webview resolves `false`. The host doesn't queue messages. When the webview comes back it sends `ready` and gets a fresh `snapshot`, which includes any partial stream. That keeps the protocol simple and correct across hide/show and reloads.
+
+### 4.1 Iteration 1 contract (#09)
+
+The source of truth is [`core/protocol/messages.ts`](../src/core/protocol/messages.ts). It exports `PROTOCOL_VERSION = 1`, `MAX_SEND_BYTES = 100_000`, both message unions and the `hostMessages` builders. [`parse.ts`](../src/core/protocol/parse.ts) exports `parseWebviewMessage(raw)` and `parseHostMessage(raw)`. Both accept `unknown` and return `{ ok: true, msg } | { ok: false, reason }`.
+
+Every message has `v: 1` and one of these `type` values:
+
+| Direction | Type | Payload (besides `v` and `type`) |
+|---|---|---|
+| Webview to host | `ready` | None |
+| Webview to host | `send` | `{ tabKey, text }` |
+| Host to webview | `snapshot` | `{ state: ViewState }` |
+| Host to webview | `turnStarted` | `{ tabKey, turnId, userTurn: UserTurn, model: AssistantTurn["model"], at }` |
+| Host to webview | `chunk` | `{ tabKey, turnId, text }` |
+| Host to webview | `turnEnded` | `{ tabKey, turnId, status: TurnStatus, usage?: Usage, error?: string }` |
+| Host to webview | `error` | `{ tabKey?: TabKey, message }` |
+
+`turnStarted.turnId` identifies the new assistant reply. It also carries the user turn and the assistant's model and timestamp, so the reducer can create both sides of the exchange without guessing. `chunk.text` is appended exactly as sent, including empty strings and whitespace. Only a user's `send.text` is trimmed and size-limited.
+
+`ViewState` is the minimal complete snapshot for iteration 1:
+
+- `tabs`: an array of `TabView` objects, each with `key`, `label`, `turns: Turn[]`, `streaming` and an optional `error` string.
+- `streaming`: `null` or `{ id, text, model, at }` for the partial assistant reply. Completed turns use the existing `UserTurn` and `AssistantTurn` domain types.
+- `activeTab`: a tab key or `null` for no selection.
+- `availability`: `{ state: "missing" }` or `{ state: "ready", degraded: DegradableMember[] }`. These reuse the corresponding domain variants. The richer Q0T4 availability states arrive with iteration 4; model options and budget views arrive with their own issues.
+
+The parsers validate all recognised nested fields and return fresh plain objects and arrays. Optional fields may be omitted; a present field must have its declared type, so explicit `undefined` is not accepted. Costs and borrowed usage must be finite non-negative numbers; attachment byte counts must also be safe integers. Keys, IDs, labels, model fields and timestamps must be non-empty strings. Date parsing, repo-path checks and state consistency remain the responsibilities of their owning features.
+
+Unknown fields are ignored and removed at every level without reading their values. Required fields must be own data properties, not inherited fields or accessors. Plain objects, including null-prototype records, are accepted. Arrays with missing elements, unsupported message types, wrong versions and malformed payloads are rejected with a reason. Exceptions from hostile proxies are contained at the parsing boundary; the parser never inspects or returns the thrown value. No untrusted object is spread into the output.
+
+The contract is tested in Node and happy-dom and type-checked for both bundles. The channel and controller will consume it in issues 13 and 14. Until then, the installed extension remains the iteration 0 placeholder.
 
 ---
 
