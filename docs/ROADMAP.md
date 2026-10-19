@@ -4,6 +4,8 @@ See [PLAN.md](PLAN.md) for the architecture and testing rules, and [Q0T4-API-CON
 
 Every iteration ends with **CI green** and a **`.vsix` you can install** (downloaded from the CI artifact) and try by following `docs/manual-testing.md`.
 
+**Progress:** iteration 0, 6 of 8 issues done (01–06). Next: #07 GitHub Actions CI. Ticked items name the PR that merged them.
+
 ## Iterations
 
 | # | Iteration | What you can try at the end | Issues |
@@ -45,12 +47,12 @@ it7: 36 → 44;  28 → 45;  40 → 46;  43,44,45,46 → 47
 Each issue depends only on lower-numbered issues, so working top to bottom is always valid. Issues marked ∥ can be done in parallel with the one above.
 
 ### Iteration 0: Test harness
-- [ ] 01 Project scaffold
-- [ ] 02 Vitest, DOM tests and enforced core coverage (needs 01)
-- [ ] 03 Port interfaces, domain types and Q0T4 contract types (needs 01) ∥
-- [ ] 04 `FakeBudget` and the `BudgetPort` contract suite (needs 02, 03)
-- [ ] 05 The other fakes (needs 02, 03) ∥
-- [ ] 06 Integration runner, `FakeQ0T4Api` and the fake Q0T4 extension (needs 02, 03) ∥
+- [x] 01 Project scaffold ✅ PR #49
+- [x] 02 Vitest, DOM tests and enforced core coverage (needs 01) ✅ PR #50
+- [x] 03 Port interfaces, domain types and Q0T4 contract types (needs 01) ∥ ✅ PR #52
+- [x] 04 `FakeBudget`, `FixedClock` and the `BudgetPort` contract suite (needs 02, 03) ✅ PR #53
+- [x] 05 The remaining fakes (needs 02, 03) ∥ ✅ PR #54
+- [x] 06 Integration runner, `FakeQ0T4Api` and the fake Q0T4 extension (needs 02, 03) ∥ ✅ PR #55
 - [ ] 07 GitHub Actions CI (needs 02, 06)
 - [ ] 08 Stub view and `.vsix` (needs 06, 07). 🎯 **Install and try**
 
@@ -117,3 +119,4 @@ Each issue depends only on lower-numbered issues, so working top to bottom is al
 3. CI is green: lint, typecheck, unit + DOM (ubuntu and windows), integration (xvfb, all three configs), package
 4. The manual checks in the issue are done, where the issue lists any
 5. `README.md` is updated: what R3P0 is, its current status, and how to use what exists so far (every PR, including docs PRs)
+6. `docs/ROADMAP.md` is updated: the issue is ticked with its PR number, and the progress line names the next issue (every PR)
