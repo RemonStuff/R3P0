@@ -4,7 +4,7 @@ See [PLAN.md](PLAN.md) for the architecture and testing rules, and [Q0T4-API-CON
 
 Every iteration ends with **CI green** and a **`.vsix` you can install** (downloaded from the CI artifact) and try by following `docs/manual-testing.md`.
 
-**Progress:** iteration 0, 7 of 8 issues done (01–07). CI runs on every push and PR. Next: #08 stub view and installable `.vsix`, which ends iteration 0. Ticked items name the PR that merged them.
+**Progress:** iteration 0, 7 of 8 issues merged (01–07). CI runs on every push and PR. #08 (stub view and installable `.vsix`) is in progress and ends iteration 0. Next after #08: #09 protocol messages and validators. Ticked items name the PR that merged them.
 
 ## Iterations
 
