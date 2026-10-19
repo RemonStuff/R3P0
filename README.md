@@ -15,7 +15,7 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 
 ## Status
 
-🚧 **In development: iteration 0 (test harness) is complete.** The installable extension opens a placeholder view, not a working chat. Q0T4 is not needed to try the placeholder. Next is iteration 1's walking skeleton. The plan is in [docs/PLAN.md](docs/PLAN.md), and progress is tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and on the [R3P0 Roadmap board](https://github.com/users/RemonStuff/projects/2).
+🚧 **In development: iteration 0 (test harness) is complete; iteration 1's walking skeleton is underway.** The installable extension still opens a placeholder view, not a working chat. Q0T4 is not needed to try the placeholder. The plan is in [docs/PLAN.md](docs/PLAN.md), and progress is tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and on the [R3P0 Roadmap board](https://github.com/users/RemonStuff/projects/2).
 
 | Done | What                                                                                           |
 | ---- | ---------------------------------------------------------------------------------------------- |
@@ -27,6 +27,7 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 | ✅   | Integration tests in a real VS Code with a fake Q0T4 and a fake model provider (#6)            |
 | ✅   | GitHub Actions CI on every push and PR, with a `.vsix` artifact (#7)                           |
 | ✅   | Installable activity-bar placeholder view with a strict content security policy (#8)           |
+| ✅   | Shared protocol message types, host builders and safe Node/browser validators (#9)             |
 
 ## Requirements
 
@@ -59,5 +60,7 @@ npm run package     # r3p0-<version>.vsix
 ```
 
 Press **F5** in VS Code to start an Extension Development Host with R3P0 loaded.
+
+The shared [protocol types and host message builders](src/core/protocol/messages.ts) and [message parsers](src/core/protocol/parse.ts) are the first building block for iteration 1 (#9). They validate messages in Node and the browser without VS Code dependencies. Send text is trimmed and limited to 100,000 UTF-8 bytes; invalid messages return an explicit reason instead of throwing. The controller and webview will use these parsers when they are wired in later issues. See [the iteration 1 contract](docs/PLAN.md#41-iteration-1-contract-09) for the exact payloads.
 
 The project is strictly test-driven (red → green → refactor), with all logic in `src/core` behind ports. See [docs/PLAN.md §8](docs/PLAN.md#8-testing-strategy).
