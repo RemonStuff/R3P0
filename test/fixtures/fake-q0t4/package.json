@@ -1,0 +1,39 @@
+{
+  "name": "q0t4",
+  "displayName": "R3P0 test: fake Q0T4",
+  "description": "Test-only. Pretends to be Q0T4 (same ID, RemonStuff.q0t4) and exports a scripted public API, so R3P0's integration tests never use the real Q0T4.",
+  "version": "0.0.0",
+  "publisher": "RemonStuff",
+  "private": true,
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "fake-q0t4.script",
+        "title": "Fake Q0T4: Script"
+      },
+      {
+        "command": "fake-q0t4.calls",
+        "title": "Fake Q0T4: Calls"
+      },
+      {
+        "command": "fake-q0t4.reset",
+        "title": "Fake Q0T4: Reset"
+      },
+      {
+        "command": "fake-q0t4.emitUsage",
+        "title": "Fake Q0T4: Emit Usage"
+      },
+      {
+        "command": "q0t4.allowReserve",
+        "title": "Fake Q0T4: Allow Reserve"
+      }
+    ]
+  }
+}

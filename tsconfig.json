@@ -17,5 +17,13 @@
     "types": ["node", "vscode"]
   },
   "include": ["src", "test", "vitest.config.ts"],
-  "exclude": ["node_modules", "dist", "test/lint-fixtures", "src/webview", "test/webview"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "out",
+    "test/lint-fixtures",
+    "src/webview",
+    "test/webview",
+    "test/integration"
+  ]
 }

@@ -5,7 +5,7 @@
 ## Description
 Set up `@vscode/test-cli` and `@vscode/test-electron` so a real VS Code instance loads R3P0 next to two **test-only fixture extensions**:
 - **`fake-q0t4`**: package `publisher: "RemonStuff"`, `name: "q0t4"`, so `getExtension("RemonStuff.q0t4")` finds it. Its `activate()` returns a `FakeQ0T4Api` shaped like Q0T4 §9.8 (`{ apiVersion: 1, forExtension(id) }` → a client), bundled from `test/fakes/fakeQ0T4Api.ts`, so unit and integration tests script the same fake. It also registers a fake `q0t4.allowReserve` command. The commands `fake-q0t4.script(...)`, `fake-q0t4.calls()` and `fake-q0t4.reset()` let tests script it and read what it received (the subject, the model's `vendor`/`id`, the message texts and the extension ID). `FAKE_Q0T4_API_VERSION` in the env overrides `apiVersion`. It streams scripted text and never calls the model it's given.
-- **`fake-lm-provider`**: registers the vendor `r3p0-test` through `vscode.lm.registerLanguageModelChatProvider`, so the model picker has models, and R3P0 has real `LanguageModelChat` objects to hand to the fake Q0T4. Nothing ever sends to them.
+- **`fake-lm-provider`**: registers the vendor `r3p0-test` through `vscode.lm.registerLanguageModelChatProvider`, so the model picker has models, and R3P0 has real `LanguageModelChat` objects to hand to the fake Q0T4. It **throws on every request and token count**, so nothing in R3P0 (or its tests) can use a model without going through Q0T4.
 
 Also add a script that generates a **multi-root test workspace**: temporary git repos (one with `origin` on GitHub, one with only `upstream`, one with no remote) plus a plain folder, written to a `.code-workspace` file.
 
@@ -29,6 +29,8 @@ The real Q0T4 and real Copilot models are never used.
 - `R3P0 extension is present in the test instance`
 - `fake Q0T4 is found as RemonStuff.q0t4 and activate() returns apiVersion 1 with forExtension`
 - `the fake q0t4.allowReserve command is registered`
+- `the fake Q0T4 streams scripted text for a real model object and records the call`
+- `the fake LM provider refuses any request, so nothing can bypass Q0T4`
 - `fake LM provider models are visible via selectChatModels({ vendor: "r3p0-test" })`
 - `the test workspace has 4 folders and the git repos have the scripted remotes`
 - `no test file references vendor "copilot"` (grep test)

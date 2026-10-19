@@ -2,6 +2,7 @@ export { Emitter } from "./emitter";
 export { FakeBudget, type ReplyScript } from "./fakeBudget";
 export { FakeCancellation } from "./fakeCancellation";
 export { FakeModelCatalog, modelInfo } from "./fakeModelCatalog";
+export { FakeQ0T4Api, type FakeQ0T4Script, type PlainQ0T4Types } from "./fakeQ0T4Api";
 export { FakeRepoDiscovery, repo } from "./fakeRepoDiscovery";
 export { FakeUi } from "./fakeUi";
 export { FakeWebviewChannel } from "./fakeWebviewChannel";
