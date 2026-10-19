@@ -45,7 +45,7 @@ Red checkpoint `deff3cd`: `npm test -- test/unit/ui/reducer.test.ts` produced **
 
 After implementation, **all 68 focused tests passed**. The full unit/DOM suite passed **442 tests**, with **100% core line coverage and 97.48% branch coverage**. All three new UI modules have **100% line coverage**, and both modules with branches have **100% branch coverage**. Inputs are deeply frozen in the reducer tests; real session sequences use only `FakeBudget`, `FakeCancellation` and `FixedClock`.
 
-Local validation is window-free. Real VS Code integration testing remains in hosted Linux CI after separately approved publication. Local results do not replace exact-head hosted execution or artifact verification.
+Local validation is window-free. After separately approved publication, initial head `ce7b410` passed all five jobs in [push CI](https://github.com/RemonStuff/R3P0/actions/runs/39277993544) and [PR CI](https://github.com/RemonStuff/R3P0/actions/runs/39278003429). Actual logs confirmed 442 unit/DOM tests on both Linux and Windows, all 22 real VS Code tests (11/6/5), and unchanged core coverage. The hosted package matched the local exact-source build. See [PR #63](https://github.com/RemonStuff/R3P0/pull/63) for final-head and post-merge verification. No real VS Code GUI was launched on the Mac.
 
 ## Implementation tasks
 - [x] `src/core/ui/state.ts` (types), `reducer.ts`, `selectors.ts`
@@ -53,7 +53,7 @@ Local validation is window-free. Real VS Code integration testing remains in hos
 
 ## Acceptance criteria
 - [x] The listed tests pass and core line/branch coverage is ≥ 90%
-- [ ] Hosted CI is green on the published head, including real VS Code tests and the packaged artifact
+- [x] Hosted CI is green on the published head, including real VS Code tests and the packaged artifact (see [PR #63](https://github.com/RemonStuff/R3P0/pull/63) for exact-head evidence)
 
 ## Depends on
 #09

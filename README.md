@@ -29,6 +29,7 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 | ✅   | Installable activity-bar placeholder view with a strict content security policy (#8)           |
 | ✅   | Shared protocol message types, host builders and safe Node/browser validators (#9)             |
 | ✅   | Single-repo ChatSession core, UTF-8 chunk batching and preserved metered outcomes (#10)        |
+| ✅   | Pure UI state reducer, transcript/input selectors and local error dismissal (#11)              |
 
 ## Requirements
 
