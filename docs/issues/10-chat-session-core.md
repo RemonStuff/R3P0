@@ -40,7 +40,7 @@ A `ChatSession` owns one repo's conversation and drives one request at a time th
 
 See [PLAN §3.3](../PLAN.md#33-single-session-core-10) for constructor options, `send`, `snapshot`, cancellation ownership, batching and error handling. This issue does not change the installed placeholder.
 
-The local red checkpoint is `e0e8bc9`: the focused tests had **76 expected failures and 2 passes**, with typechecks, lint and formatting passing. An additional delivery regression then reproduced both an escaping timer error and lost reported usage: **2 expected failures and 2 passes** in the sink-failure selector. Both were fixed before the final green run. The final focused suite has **79 passing tests**; the full unit/DOM suite has **364 passing tests**, with **100% core line coverage and 96.49% branch coverage**. Publication and hosted CI remain pending.
+The local red checkpoint is `e0e8bc9`: the focused tests had **76 expected failures and 2 passes**, with typechecks, lint and formatting passing. An additional delivery regression then reproduced both an escaping timer error and lost reported usage: **2 expected failures and 2 passes** in the sink-failure selector. Both were fixed before the final green run. The final focused suite has **79 passing tests**; the full unit/DOM suite has **364 passing tests**, with **100% core line coverage and 96.49% branch coverage**. These local results do not replace hosted CI on the published head.
 
 Local validation also passed all **22 real VS Code integration tests** (11 with fake Q0T4 v1, 6 without Q0T4 and 5 with fake Q0T4 v2), lint, all three TypeScript checks, formatting, production VSIX packaging and source/history secret scans. No real model or Q0T4 request was made.
 
