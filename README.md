@@ -1,4 +1,17 @@
-# R3P0
+---
+post_title: "R3P0"
+author1: "AI assistant"
+post_slug: "r3p0"
+microsoft_alias: ""
+featured_image: ""
+categories: []
+tags: ["r3p0", "development"]
+ai_note: "AI-assisted documentation updated with local verification."
+summary: "Repository-scoped chat through Q0T4; the installed view is still a placeholder."
+post_date: "2026-10-20"
+---
+
+## R3P0
 
 [![CI](https://github.com/RemonStuff/R3P0/actions/workflows/ci.yml/badge.svg)](https://github.com/RemonStuff/R3P0/actions/workflows/ci.yml)
 
@@ -59,16 +72,45 @@ npm run coverage    # fails below 90% line or branch coverage on src/core
 npm run lint        # includes the ban on vscode imports in core, ports and webview
 npm run typecheck   # extension, webview and integration test types; no GUI
 npm run format:check
-npm run build       # dist/extension.js and dist/webview.js
+npm run build       # extension.js, webview.js and webview.css in dist/
 npm run package     # r3p0-<version>.vsix
 ```
 
 Hosted CI still runs all three real VS Code configurations; no integration tests are skipped. See [test/integration/README.md](test/integration/README.md). For an explicitly requested GUI debugging session, **F5** starts an Extension Development Host with R3P0 loaded.
 
-The shared [protocol types and host message builders](src/core/protocol/messages.ts) and [message parsers](src/core/protocol/parse.ts) are the first building block for iteration 1 (#9). They validate messages in Node and the browser without VS Code dependencies. Send text is trimmed and limited to 100,000 UTF-8 bytes; invalid messages return an explicit reason instead of throwing. The controller and webview will use these parsers when they are wired in later issues. See [the iteration 1 contract](docs/PLAN.md#41-iteration-1-contract-09) for the exact payloads.
+The shared [protocol types and host message builders](src/core/protocol/messages.ts)
+and [message parsers](src/core/protocol/parse.ts) are the first building block for
+iteration 1 (#9). They validate messages in Node and the browser without VS Code
+dependencies. Send text is trimmed and limited to 100,000 UTF-8 bytes; invalid
+messages return an explicit reason instead of throwing. The #12 webview uses
+them; controller wiring follows in #14. See
+[the iteration 1 contract](docs/PLAN.md#41-iteration-1-contract-09) for the exact
+payloads.
 
 The [single-repo `ChatSession`](src/core/chat/chatSession.ts) and [chunk batcher](src/core/chat/chunkBatcher.ts) implement #10. A session sends only through `BudgetPort`, keeps partial replies and reported usage, and allows one request at a time. It batches output 50 ms from the first buffered text or when the buffer reaches 2,048 UTF-8 bytes. This byte threshold triggers a flush; it does not split a large chunk or change its text. See [the core contract](docs/PLAN.md#33-single-session-core-10) for the API and failure handling. This is core logic only: the installed view remains a placeholder until #14 wires it to the UI and simulated budget.
 
-The [UI state](src/core/ui/state.ts), [reducer](src/core/ui/reducer.ts) and [selectors](src/core/ui/selectors.ts) implement #11's pure state logic. They project validated host messages into tab transcripts, preserve partial replies and reported outcomes, and disable input when the active tab is unavailable or streaming. Tab and global error banners can be dismissed locally without erasing failed-turn details. See [the UI state contract](docs/PLAN.md#34-webview-ui-state-11). The message pump and rendering arrive with #12; this does not change the installed placeholder.
+The [UI state](src/core/ui/state.ts), [reducer](src/core/ui/reducer.ts) and
+[selectors](src/core/ui/selectors.ts) implement #11's pure state logic. They
+project validated host messages into tab transcripts, preserve partial replies
+and reported outcomes, and disable input when the active tab is unavailable or
+streaming. The reducer supports local banner dismissal without erasing
+failed-turn details. See
+[the UI state contract](docs/PLAN.md#34-webview-ui-state-11).
+
+The [webview message pump](src/webview/main.ts),
+[transcript](src/webview/view/transcript.ts) and
+[composer](src/webview/view/composer.ts) implement #12 locally. They render plain
+text safely, show streaming and error states, and validate Enter/Send against the
+shared protocol. Shift+Enter keeps the browser's newline behaviour. Only the
+unsent draft is saved through the webview API; transcripts and availability always
+come from the host. [Theme-variable styles](src/webview/styles.css) build into
+`dist/webview.css`.
+
+These components have window-free happy-dom tests, not installed-chat proof.
+They start only when the host supplies `#r3p0-root`; the current provider does
+not, so the installed placeholder is unchanged. #13 supplies the HTML/channel
+and #14 connects the controller and simulated budget. No model or real Q0T4
+requests are made. See
+[the DOM contract](docs/PLAN.md#35-webview-dom-and-message-pump-12).
 
 The project is strictly test-driven (red → green → refactor), with all logic in `src/core` behind ports. See [docs/PLAN.md §8](docs/PLAN.md#8-testing-strategy).

@@ -1,0 +1,81 @@
+.r3p0-chat {
+  color: var(--vscode-foreground);
+  background: var(--vscode-sideBar-background);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  overflow-wrap: anywhere;
+}
+
+.r3p0-chat .transcript {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.r3p0-chat .turn {
+  margin: 0 0 1rem;
+}
+
+.r3p0-chat .turn-text,
+.r3p0-chat .turn-error,
+.r3p0-chat .error-banner {
+  white-space: pre-wrap;
+}
+
+.r3p0-chat .typing-indicator,
+.r3p0-chat .turn-status,
+.r3p0-chat .composer p {
+  color: var(--vscode-descriptionForeground);
+}
+
+.r3p0-chat .turn-error,
+.r3p0-chat .error-banner,
+.r3p0-chat .composer .composer-error {
+  color: var(--vscode-errorForeground);
+}
+
+.r3p0-chat p:empty {
+  display: none;
+}
+
+.r3p0-chat .composer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.r3p0-chat textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 4rem;
+  resize: vertical;
+  color: var(--vscode-input-foreground);
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border);
+  font: inherit;
+}
+
+.r3p0-chat button {
+  align-self: flex-end;
+  padding: 0.25rem 0.75rem;
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+  border: 1px solid var(--vscode-button-border);
+  font: inherit;
+  cursor: pointer;
+}
+
+.r3p0-chat button:hover:not(:disabled) {
+  background: var(--vscode-button-hoverBackground);
+}
+
+.r3p0-chat textarea:focus-visible,
+.r3p0-chat button:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 2px;
+}
+
+.r3p0-chat :disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

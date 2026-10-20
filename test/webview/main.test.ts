@@ -197,6 +197,22 @@ describe("webview entry point and message pump", () => {
     expect(root.querySelector("textarea")?.disabled).toBe(true);
   });
 
+  it("completes a reply once and ignores stale chunks and repeated completion", async () => {
+    await load();
+    receive(hostMessages.snapshot(ready));
+    receive(hostMessages.turnStarted({ tabKey, turnId: "reply", userTurn, model, at }));
+    receive(hostMessages.chunk(tabKey, "reply", "Finished"));
+    receive(hostMessages.turnEnded({ tabKey, turnId: "reply", status: "complete", usage }));
+    const reply = root.querySelector('[data-status="complete"]');
+    expect(reply?.querySelector(".turn-text")?.textContent).toBe("Finished");
+    expect(root.querySelector("textarea")?.disabled).toBe(false);
+    receive(hostMessages.chunk(tabKey, "reply", "stale"));
+    receive(hostMessages.turnEnded({ tabKey, turnId: "reply", status: "complete", usage }));
+    expect(root.querySelector('[data-status="complete"]')).toBe(reply);
+    expect(root.querySelectorAll("[data-role]")).toHaveLength(2);
+    expect(root.textContent).not.toContain("stale");
+  });
+
   it("shows literal global and tab errors without exposing inactive errors", async () => {
     await load();
     receive(hostMessages.error("<script>global error</script>"));
@@ -248,15 +264,19 @@ describe("webview entry point and message pump", () => {
     expect(api.posted.filter((message) => message.type === "ready")).toHaveLength(2);
   });
 
-  it.each([undefined, null, 42, [], { draft: 42 }, { transcript: "not a draft" }])(
-    "ignores malformed cosmetic state without restoring host state: %j",
-    async (saved) => {
-      api = new FakeVsCodeApi(saved);
-      await load();
-      expect(root.querySelector("textarea")?.value).toBe("");
-      expect(api.posted).toEqual([{ v: 1, type: "ready" }]);
-    },
-  );
+  it.each([
+    { saved: undefined },
+    { saved: null },
+    { saved: 42 },
+    { saved: [] },
+    { saved: { draft: 42 } },
+    { saved: { transcript: "not a draft" } },
+  ])("ignores malformed cosmetic state without restoring host state: $saved", async ({ saved }) => {
+    api = new FakeVsCodeApi(saved);
+    await load();
+    expect(root.querySelector("textarea")?.value).toBe("");
+    expect(api.posted).toEqual([{ v: 1, type: "ready" }]);
+  });
 
   it("removes message and composer listeners on pagehide", async () => {
     await load();

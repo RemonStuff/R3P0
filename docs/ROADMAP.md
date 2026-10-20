@@ -1,10 +1,28 @@
-# R3P0: Roadmap
+---
+post_title: "R3P0: Roadmap"
+author1: "AI assistant"
+post_slug: "r3p0-roadmap"
+microsoft_alias: ""
+featured_image: ""
+categories: []
+tags: ["r3p0", "roadmap"]
+ai_note: "AI-assisted roadmap; local work is distinguished from merged completion."
+summary: "Iteration progress and dependencies, with issue 12 in local development."
+post_date: "2026-10-20"
+---
+
+## R3P0: Roadmap
 
 See [PLAN.md](PLAN.md) for the architecture and testing rules, and [Q0T4-API-CONTRACT.md](Q0T4-API-CONTRACT.md) for what R3P0 needs from Q0T4. Each issue is in [issues/](issues/).
 
 Every iteration ends with **CI green** and a **`.vsix` you can install** (downloaded from the CI artifact) and try by following `docs/manual-testing.md`.
 
-**Progress:** iteration 0 is complete (01–08). Iteration 1 has 3 of 6 issues complete: #09 protocol messages and validators, #10 `ChatSession` core and chunk batching, and #11 the UI state reducer. Next: #12 the webview transcript, composer and message pump. CI runs on every push and PR. Ticked items name the PR that merged them.
+**Progress:** iteration 0 is complete (01–08). Iteration 1 has 3 of 6 issues
+complete: #09 protocol messages and validators, #10 `ChatSession` core and chunk
+batching, and #11 the UI state reducer. Current: #12 the webview transcript,
+composer and message pump is In Progress. Local DOM tests pass; hosted CI and an
+approved PR merge are pending. The installed view remains a placeholder. CI runs
+on every push and PR. Ticked items name the PR that merged them.
 
 **Verification follow-up:** [#61](https://github.com/RemonStuff/R3P0/issues/61) is fixed by [PR #62](https://github.com/RemonStuff/R3P0/pull/62), merged as `ccc4454`. [Exact-main CI](https://github.com/RemonStuff/R3P0/actions/runs/39274837058) passed all five jobs, including all 22 real VS Code tests. The repaired activation test waits for view-triggered activation and provider readiness without forcing activation. The old failed run remains recorded; this fresh merge verification resolves the blocker after #10. Local validation on macOS stays window-free.
 
@@ -62,7 +80,7 @@ Each issue depends only on lower-numbered issues, so working top to bottom is al
 - [x] 09 Protocol messages and validators (needs 03) ✅ PR #59
 - [x] 10 `ChatSession` core (needs 04, 05, 09) ✅ PR #60
 - [x] 11 Webview state reducer (needs 09) ∥ ✅ PR #63
-- [ ] 12 Webview DOM: transcript and composer (needs 11)
+- [ ] 12 Webview DOM: transcript, composer and message pump (needs 11) — In Progress; local DOM tests pass, hosted CI and PR merge pending
 - [ ] 13 Webview HTML/CSP and the channel adapter (needs 08, 09) ∥
 - [ ] 14 Simulated budget and skeleton wiring (needs 10, 12, 13). 🎯 **Install and try**
 
