@@ -1,4 +1,17 @@
-# R3P0: Plan
+---
+post_title: "R3P0: Plan"
+author1: "AI assistant"
+post_slug: "r3p0-plan"
+microsoft_alias: ""
+featured_image: ""
+categories: []
+tags: ["r3p0", "architecture"]
+ai_note: "AI-assisted design documentation; implementation status is stated explicitly."
+summary: "Architecture, protocol and test-first delivery plan for R3P0."
+post_date: "2026-10-20"
+---
+
+## R3P0: Plan
 
 R3P0 is a VS Code extension that gives you **one chat per repo**. In a multi-root workspace with 7 repos open, R3P0 shows 7 chat tabs (plus an **Overview** tab), each one scoped to its own repo. R3P0 never talks to a language model itself: **every request goes through Q0T4's public API** (`sendRequest`), so all tabs share Q0T4's monthly pool, reserve and per-repo weekly budgets, and Q0T4's metering and cut-off apply to every token.
 
@@ -174,7 +187,7 @@ test/
 
 ### 3.4 Webview UI state (#11)
 
-The UI modules are pure core. They take already validated `HostMessage` values, with no DOM, VS Code, clocks, model calls or new dependencies. The message pump in #12 will call `parseHostMessage` before using the reducer; the installed placeholder is unchanged here.
+The UI modules are pure core. They take already validated `HostMessage` values, with no DOM, VS Code, clocks, model calls or new dependencies. The #12 message pump calls `parseHostMessage` before using the reducer; the installed placeholder is unchanged here.
 
 - [`state.ts`](../src/core/ui/state.ts) exports `UiState`, which reuses `ViewState` and adds only an optional local `globalError`. `createInitialState()` returns fresh empty tabs, no active selection and missing availability. `Transcript` reuses the existing `turns` and `streaming` fields rather than giving an in-flight reply a fabricated final status.
 - [`reduce(state, message)`](../src/core/ui/reducer.ts) replaces the entire state on `snapshot`, including selection, availability, partial streams and tab errors. Old local global banners are discarded. Incremental updates never create tabs or change the active selection.
@@ -185,6 +198,45 @@ The UI modules are pure core. They take already validated `HostMessage` values, 
 - [`selectTranscript(state)`](../src/core/ui/selectors.ts) returns `{ turns, streaming }` for the active tab, or an empty transcript for no matching selection. `isInputEnabled(state)` requires a matching active tab, ready availability and no stream, including an empty stream. Ready-but-degraded availability remains usable; later budget refusal and reserve controls belong to their own issues.
 
 State, messages, arrays and nested records are treated as readonly. Changed tabs get new records and arrays; untouched tabs and known no-ops keep their references. Tests freeze nested inputs, cover snapshot recovery and error dismissal, and compare real `ChatSession` emissions with the session's final snapshot using `FakeBudget` and `FixedClock`.
+
+### 3.5 Webview DOM and message pump (#12)
+
+Implemented and tested locally; hosted CI and an approved merge are still pending.
+The installed extension remains the iteration 0 placeholder. No model, real
+Q0T4 request or installed chat is exercised by these DOM tests.
+
+- [`main.ts`](../src/webview/main.ts) starts only when the document contains
+  `#r3p0-root`. It acquires the VS Code webview API once, registers its message
+  listener before posting `ready`, validates each host message, reduces it and
+  renders only its owned subtree. Invalid messages log the parser reason, not
+  message data or draft text. Known reducer no-ops do not redraw the UI.
+- [`transcript.ts`](../src/webview/view/transcript.ts) renders the selected
+  transcript in order with `textContent`, preserving whitespace and Unicode.
+  Streaming replies, including empty ones, show `Replying...`. Completed replies
+  keep their terminal status, partial text and literal error details.
+- [`composer.ts`](../src/webview/view/composer.ts) keeps one labelled textarea
+  node across host updates. It uses `isInputEnabled` and the shared outgoing
+  parser for both Enter and Send. Shift+Enter keeps the browser's default newline
+  behaviour; IME composition and repeated keydown events do not submit. Empty or
+  oversized trimmed text cannot send. Oversized drafts show the parser's reason
+  and remain editable; the limit is 100,000 UTF-8 bytes, not characters.
+- `setState({ draft })` saves the exact single unsent draft on each input event
+  and saves an empty draft after sending. Only a stored string draft is restored.
+  Host snapshots never overwrite it or persist conversations, budgets or
+  availability. A reload starts with empty host state and asks for a new snapshot.
+  Per-tab draft handling belongs with the later tab UI.
+- Global and active-tab errors are literal text. Missing availability explains
+  why sending is disabled. Page disposal removes message and composer listeners.
+- [`styles.css`](../src/webview/styles.css) uses only `--vscode-*` variables for
+  theme-dependent values. Its import emits `dist/webview.css` alongside the
+  browser bundle. The #13 HTML builder must supply `#r3p0-root`, load both assets
+  and allow the stylesheet through its CSP. #14 owns controller/budget wiring;
+  #21 owns Markdown and #22 owns incremental streaming rendering.
+
+The happy-dom tests inject a fake `acquireVsCodeApi`, verify safe text, message
+validation, selected-tab isolation, keyboard handling, exact byte boundaries,
+snapshot recovery, draft persistence and disposal. They do not prove native
+textarea editing, installed styling or a real VS Code webview channel.
 
 ---
 
