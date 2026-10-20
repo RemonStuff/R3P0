@@ -97,7 +97,7 @@ src/
                  warning state), overviewRows, refusal and reserve-grant view state
     context/     isInsideRepo (Windows casing, `..`, separators), attachment limits
     protocol/    PROTOCOL_VERSION, HostMessage / WebviewMessage types, parseWebviewMessage, parseHostMessage
-    ui/          webview state reducer + selectors (pure, imported by the webview bundle)
+    ui/          state, reducer + local error dismissal, transcript/input selectors (pure; #12 consumes them)
     format/      every user-visible string: refusals, unavailable reasons, "112k / 150k", reset dates
     controller.ts    orchestrates the ports ↔ SessionManager ↔ protocol
     types.ts     domain types (RepoTab, Conversation, Turn, ModelRef, BudgetSnapshot…)
@@ -169,6 +169,22 @@ test/
 - Normal completion flushes remaining text before exactly one `turnEnded`. The busy gate and batching timer are always released. A synchronous notification-sink error rejects `send`, rather than being relabelled as a model failure. If chunk delivery fails, including from a timer, further chunk notifications stop but the session drains the metered reply first. The transcript keeps its actual final status, text and usage, then `send` rejects with the original delivery error. A failure delivering `turnStarted` prevents the budget call.
 
 `ChunkBatcher(clock, emit)` exposes `push(text)`, `flush()` and `dispose()`. The first nonempty buffered input starts one 50 ms timer; later input does not reset it. A joined buffer of at least 2,048 UTF-8 bytes flushes immediately and cancels that timer. The threshold is a trigger, **not a hard outgoing message-size cap**: an oversized individual chunk stays intact. Text, whitespace and Unicode are preserved exactly, including surrogate pairs split across incoming chunks. Empty input starts no timer. Explicit flush emits any remainder once. Disposal discards buffered text and cancels the timer without emitting; it is idempotent, and subsequent `push` or `flush` calls reject misuse by throwing.
+
+---
+
+### 3.4 Webview UI state (#11)
+
+The UI modules are pure core. They take already validated `HostMessage` values, with no DOM, VS Code, clocks, model calls or new dependencies. The message pump in #12 will call `parseHostMessage` before using the reducer; the installed placeholder is unchanged here.
+
+- [`state.ts`](../src/core/ui/state.ts) exports `UiState`, which reuses `ViewState` and adds only an optional local `globalError`. `createInitialState()` returns fresh empty tabs, no active selection and missing availability. `Transcript` reuses the existing `turns` and `streaming` fields rather than giving an in-flight reply a fabricated final status.
+- [`reduce(state, message)`](../src/core/ui/reducer.ts) replaces the entire state on `snapshot`, including selection, availability, partial streams and tab errors. Old local global banners are discarded. Incremental updates never create tabs or change the active selection.
+- `turnStarted` appends the supplied user turn and creates a separate empty streaming reply from the assistant ID, model and timestamp. It clears only that tab's previous banner. It ignores starts for an occupied stream, repeated historical IDs, or colliding user/assistant IDs. IDs are scoped to each tab, not globally.
+- `chunk` appends text exactly, including whitespace, repeated text and split Unicode surrogate pairs. An empty chunk is a no-op. A matching `turnEnded` appends the partial reply as an `AssistantTurn`, preserves every declared terminal status and any reported usage/error, and clears streaming. Missing usage is not converted to zero.
+- Unknown tabs, unknown or completed turn IDs, overlapping starts and repeated completion are explicit no-ops. The next snapshot is authoritative recovery. The reducer does not deduplicate chunk text: identical adjacent chunks can be legitimate. The #14 controller must coordinate snapshots with batched delivery so subsequent chunks do not replay text already included in the snapshot.
+- A scoped `error` sets that tab's literal banner; an unscoped error sets `globalError`, including before the first snapshot. Error banners do not end a stream. `dismissError(state, tabKey?)` clears only the requested tab banner, or only the global banner when the key is omitted. Failed-turn error details remain in history. An unknown tab's error is not redirected to another tab.
+- [`selectTranscript(state)`](../src/core/ui/selectors.ts) returns `{ turns, streaming }` for the active tab, or an empty transcript for no matching selection. `isInputEnabled(state)` requires a matching active tab, ready availability and no stream, including an empty stream. Ready-but-degraded availability remains usable; later budget refusal and reserve controls belong to their own issues.
+
+State, messages, arrays and nested records are treated as readonly. Changed tabs get new records and arrays; untouched tabs and known no-ops keep their references. Tests freeze nested inputs, cover snapshot recovery and error dismissal, and compare real `ChatSession` emissions with the session's final snapshot using `FakeBudget` and `FixedClock`.
 
 ---
 

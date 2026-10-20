@@ -29,6 +29,7 @@ R3P0 never calls a language model itself. Every request goes through **[Q0T4](ht
 | ✅   | Installable activity-bar placeholder view with a strict content security policy (#8)           |
 | ✅   | Shared protocol message types, host builders and safe Node/browser validators (#9)             |
 | ✅   | Single-repo ChatSession core, UTF-8 chunk batching and preserved metered outcomes (#10)        |
+| ✅   | Pure UI state reducer, transcript/input selectors and local error dismissal (#11)              |
 
 ## Requirements
 
@@ -67,5 +68,7 @@ Hosted CI still runs all three real VS Code configurations; no integration tests
 The shared [protocol types and host message builders](src/core/protocol/messages.ts) and [message parsers](src/core/protocol/parse.ts) are the first building block for iteration 1 (#9). They validate messages in Node and the browser without VS Code dependencies. Send text is trimmed and limited to 100,000 UTF-8 bytes; invalid messages return an explicit reason instead of throwing. The controller and webview will use these parsers when they are wired in later issues. See [the iteration 1 contract](docs/PLAN.md#41-iteration-1-contract-09) for the exact payloads.
 
 The [single-repo `ChatSession`](src/core/chat/chatSession.ts) and [chunk batcher](src/core/chat/chunkBatcher.ts) implement #10. A session sends only through `BudgetPort`, keeps partial replies and reported usage, and allows one request at a time. It batches output 50 ms from the first buffered text or when the buffer reaches 2,048 UTF-8 bytes. This byte threshold triggers a flush; it does not split a large chunk or change its text. See [the core contract](docs/PLAN.md#33-single-session-core-10) for the API and failure handling. This is core logic only: the installed view remains a placeholder until #14 wires it to the UI and simulated budget.
+
+The [UI state](src/core/ui/state.ts), [reducer](src/core/ui/reducer.ts) and [selectors](src/core/ui/selectors.ts) implement #11's pure state logic. They project validated host messages into tab transcripts, preserve partial replies and reported outcomes, and disable input when the active tab is unavailable or streaming. Tab and global error banners can be dismissed locally without erasing failed-turn details. See [the UI state contract](docs/PLAN.md#34-webview-ui-state-11). The message pump and rendering arrive with #12; this does not change the installed placeholder.
 
 The project is strictly test-driven (red → green → refactor), with all logic in `src/core` behind ports. See [docs/PLAN.md §8](docs/PLAN.md#8-testing-strategy).
